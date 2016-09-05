@@ -1,3 +1,4 @@
+// designer_main.js
 var dimension = 2;
 var canvas;
 var context;
