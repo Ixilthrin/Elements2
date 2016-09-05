@@ -1,0 +1,7 @@
+//body {background-image: url("background.jpg");
+//}
+
+canvas {
+    background: #fefefe;
+    border-radius: 10px; 
+}
