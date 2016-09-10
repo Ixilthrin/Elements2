@@ -30,7 +30,6 @@ function loadNextScript(index)
 	
 	var script = document.createElement("script");
 	script.type = "text/javascript";
-	script.src = scripts[index];
 	body.appendChild(script);
 	script.onload = function() { loadNextScript(index + 1); }
 }
