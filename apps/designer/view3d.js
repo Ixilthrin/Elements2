@@ -1,61 +1,65 @@
-var drawCount1 = 0;
-var frustum = new Frustum();
-var rotationY = .1;
-var shaderProgram;
-var vPosition;
-var vTexCoord;
-var mMatrix = frustum.identity;
-mMatrix = frustum.transform;
-var pMatrix = frustum.getProjectionMatrix();
-var coords3d = new Array();
-var polyBuffer;
-var triangleVertexBuffer;
-var triangleTexBuffer;
-var squareVertexBuffer;
-var squareTexBuffer;
-var textureObject;
-var screenWidth;
-var screenHeight;
-var viewCanvas;
+function View3d()
+{
+this.drawCount1 = 0;
+this.frustum = new Frustum();
+this.rotationY = .1;
+this.shaderProgram;
+this.vPosition;
+this.vTexCoord;
+this.mMatrix = this.frustum.identity;
+this.mMatrix = this.frustum.transform;
+this.pMatrix = this.frustum.getProjectionMatrix();
+this.coords3d = new Array();
+this.polyBuffer;
+this.triangleVertexBuffer;
+this.triangleTexBuffer;
+this.squareVertexBuffer;
+this.squareTexBuffer;
+this.textureObject;
+this.screenWidth;
+this.screenHeight;
+this.viewCanvas;
 
-function createContext3d(canvas) {
+this.acanvas;
+this.acontext;
+this.tex;
+}
+
+
+View3d.prototype.createContext = function(canvas) {
 	var gl;
-	viewCanvas = canvas;
+	this.viewCanvas = canvas;
 	try {
 		gl = canvas.getContext("experimental-webgl");
 		gl.viewportWidth = canvas.width;
 		gl.viewportHeight = canvas.height;
-		screenWidth = canvas.width;
-		screenHeight = canvas.height;
+		this.screenWidth = canvas.width;
+		this.screenHeight = canvas.height;
 	} catch (e) {
 	}
 	if (!gl) {
 		alert("Could not initialize webGL");
 	}
 	
-	viewCanvas.addEventListener("mousewheel", function(e) {
-	    frustum.moveForward(e.wheelDelta / 2000);
+	this.viewCanvas.addEventListener("mousewheel", function(e) {
+	    this.frustum.moveForward(e.wheelDelta / 2000);
 	});
 	
 	
 	return gl;
 }
 
-var acanvas;
-var acontext;
-var tex;
-
-function initializeView3d(gl) {
-	//frustum.moveForward(-.02);
-	initShaders(gl);
-	initBuffers(gl);
+View3d.prototype.initializeView = function(gl) {
+	this.initShaders(gl);
+	this.initBuffers(gl);
 	gl.clearColor(1, 1, 1, 1);
 	gl.enable(gl.DEPTH_TEST);
     var image = new Image();
-	image.src = "nextpage.jpg";
+	image.src = "planet-earth.jpg";
+	var view3d = this;
 	image.onload = function()
 	{
-	    createTexture(gl, image);
+	    view3d.createTexture(gl, image);
 	/*
 	acanvas = document.createElement('canvas');
     acanvas.width = 100;
@@ -75,11 +79,11 @@ function initializeView3d(gl) {
 	}
 }
 
-function createTextureFromImageData(gl, data)
+View3d.prototype.createTextureFromImageData = function(gl, data)
 {
     //gl.deleteTexture(tex);
-	tex = gl.createTexture();
-	gl.bindTexture(gl.TEXTURE_2D, tex);
+	this.tex = gl.createTexture();
+	gl.bindTexture(gl.TEXTURE_2D, this.tex);
 	gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); 
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
@@ -89,10 +93,10 @@ function createTextureFromImageData(gl, data)
 	//gl.bindTexture(gl.TEXTURE_2D, null);
 }
 
-function createTexture(gl, image)
+View3d.prototype.createTexture = function(gl, image)
 {
-	textureObject = gl.createTexture();
-	gl.bindTexture(gl.TEXTURE_2D, textureObject);
+	this.textureObject = gl.createTexture();
+	gl.bindTexture(gl.TEXTURE_2D, this.textureObject);
 	gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); 
@@ -102,33 +106,35 @@ function createTexture(gl, image)
 	//gl.bindTexture(gl.TEXTURE_2D, null);
 }
 
-function initShaders(gl) {
-	var fragmentShader = getShader(gl, "shader-fs");
+View3d.prototype.initShaders = function(gl)
+{
+	var fragmentShader = this.getShader(gl, "shader-fs");
 	
-	var vertexShader = getShader(gl, "shader-vs");
+	var vertexShader = this.getShader(gl, "shader-vs");
 
-	shaderProgram = gl.createProgram();
-	gl.attachShader(shaderProgram, vertexShader);
-	gl.attachShader(shaderProgram, fragmentShader);
-	gl.linkProgram(shaderProgram);
+	this.shaderProgram = gl.createProgram();
+	gl.attachShader(this.shaderProgram, vertexShader);
+	gl.attachShader(this.shaderProgram, fragmentShader);
+	gl.linkProgram(this.shaderProgram);
 
-	if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+	if (!gl.getProgramParameter(this.shaderProgram, gl.LINK_STATUS)) {
 		alert("Could not initialize shaders");
 	}
 
-	gl.useProgram(shaderProgram);
+	gl.useProgram(this.shaderProgram);
 
-	vPosition = gl.getAttribLocation(shaderProgram, "vPosition");
-	gl.enableVertexAttribArray(vPosition);
+	this.vPosition = gl.getAttribLocation(this.shaderProgram, "vPosition");
+	gl.enableVertexAttribArray(this.vPosition);
 
-	vTexCoord = gl.getAttribLocation(shaderProgram, "vTexCoord");
-	gl.enableVertexAttribArray(vTexCoord);
+	this.vTexCoord = gl.getAttribLocation(this.shaderProgram, "vTexCoord");
+	gl.enableVertexAttribArray(this.vTexCoord);
 	
-	shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "pMatrix");
-	shaderProgram.mMatrixUniform = gl.getUniformLocation(shaderProgram, "mMatrix");
+	this.shaderProgram.pMatrixUniform = gl.getUniformLocation(this.shaderProgram, "pMatrix");
+	this.shaderProgram.mMatrixUniform = gl.getUniformLocation(this.shaderProgram, "mMatrix");
 }
 
-function getShader(gl, id) {
+View3d.prototype.getShader = function(gl, id) 
+{
 	var shaderScript = document.getElementById(id);
 	if (!shaderScript) {
 		return null;
@@ -149,44 +155,51 @@ function getShader(gl, id) {
 	gl.compileShader(shader);
 
 	if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-		alert(gl.getShaderInfoLog(shader));
+		alert("error: " + gl.getShaderInfoLog(shader));
 		return null;
 	}
 
 	return shader;
 }
 
-function initBuffers(gl) {
-	triangleVertexBuffer = gl.createBuffer();
-	gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexBuffer);
+View3d.prototype.initBuffers = function(gl)
+{
+	this.triangleVertexBuffer = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, this.triangleVertexBuffer);
 	var vertices = [
-		 0.0,  .5,  -5,
+		 0.5,  .5,  -5,
 		-.5, -.5,  -5,
-		 .5, -.5,  -5
+		 .5, -.5,  -5,
+		 -.5, .5, -5,
+		-.5, -.5,  -5,
+		 0.5,  .5,  -5
 	];
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 
-	triangleVertexBuffer.itemSize = 3;
-	triangleVertexBuffer.numItems = 3;
+	this.triangleVertexBuffer.itemSize = 3;
+	this.triangleVertexBuffer.numItems = 6;
 
-	triangleTexBuffer = gl.createBuffer();    
-	gl.bindBuffer(gl.ARRAY_BUFFER, triangleTexBuffer);
+	this.triangleTexBuffer = gl.createBuffer();    
+	gl.bindBuffer(gl.ARRAY_BUFFER, this.triangleTexBuffer);
 	var texcoords3d = [
-		 0.5,  0,
+		 1,  0,
 		 0, 1,
-		 1, 1
+		 1, 1,
+		 0, 0,
+		 0, 1,
+		 1, 0
 	];
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texcoords3d), gl.STATIC_DRAW);
 
-	triangleTexBuffer.itemSize = 2;
-	triangleTexBuffer.numItems = 3;
+	this.triangleTexBuffer.itemSize = 2;
+	this.triangleTexBuffer.numItems = 6;
 
-	squareVertexBuffer = gl.createBuffer();
-	squareVertexBuffer.itemSize = 3;
-	squareVertexBuffer.numItems = 4;
+	this.squareVertexBuffer = gl.createBuffer();
+	this.squareVertexBuffer.itemSize = 3;
+	this.squareVertexBuffer.numItems = 4;
 
-	squareTexBuffer = gl.createBuffer();    
-	gl.bindBuffer(gl.ARRAY_BUFFER, squareTexBuffer);
+	this.squareTexBuffer = gl.createBuffer();    
+	gl.bindBuffer(gl.ARRAY_BUFFER, this.squareTexBuffer);
 	texcoords3d = [
 		 0, 0,
 		 1, 0,
@@ -195,8 +208,8 @@ function initBuffers(gl) {
 	];
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texcoords3d), gl.STATIC_DRAW);
 
-	squareTexBuffer.itemSize = 2;
-	squareTexBuffer.numItems = 4;
+	this.squareTexBuffer.itemSize = 2;
+	this.squareTexBuffer.numItems = 4;
 
 	//polyBuffer = gl.createBuffer();
 	//polyBuffer.itemSize = 3;
@@ -208,24 +221,24 @@ function initBuffers(gl) {
 }
 
 
-function showalert(text)
+View3d.prototype.showalert = function(text)
 {
-    if (drawCount1 == 0)
+    if (this.drawCount1 == 0)
 	    alert(text);
 		
-    drawCount1++;
+    this.drawCount1++;
 }
 
-function eraseView3d(gl)
-{
+View3d.prototype.eraseView = function(gl)
+{ 
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 }
 
-function drawTextbox3d(gl, imageData, wx, wy, width, height)
+View3d.prototype.drawTextbox = function(gl, imageData, wx, wy, width, height)
 {
     //gl.deleteBuffer(squareVertexBuffer);
 	//squareVertexBuffer = gl.createBuffer();    
-	gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexBuffer);
+	gl.bindBuffer(gl.ARRAY_BUFFER, this.squareVertexBuffer);
 	/*
 	vertices = [
 		 -.5, -.5,  -0.5,
@@ -235,12 +248,12 @@ function drawTextbox3d(gl, imageData, wx, wy, width, height)
 	];
 	*/
 	//frustum.moveForward(-.01);
-	var coord = frustum.convertScreenToWorld(wx + 20, wy + 20, screenWidth, screenHeight);
+	var coord = this.frustum.convertScreenToWorld(wx + 20, wy + 20, this.screenWidth, this.screenHeight);
 	var x = coord[0];
 	var y = coord[1];	
 	var z = coord[2];
-	var w = width * .66 / screenWidth;
-	var h = height * .66 / screenHeight;
+	var w = width * .66 / this.screenWidth;
+	var h = height * .66 / this.screenHeight;
 	vertices = [
 		   x,     y,  z,
 		   x + w, y,  z,
@@ -251,63 +264,65 @@ function drawTextbox3d(gl, imageData, wx, wy, width, height)
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 	
 	
-	mMatrix = frustum.transform;
+	this.mMatrix = this.frustum.transform;
 	//frustum.moveForward(-.01);
 	gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
 
 	gl.activeTexture(gl.TEXTURE0);
 	
-	createTextureFromImageData(gl, imageData);
+	this.createTextureFromImageData(gl, imageData);
 	
-	gl.uniform1i(gl.getUniformLocation(shaderProgram, "uSampler"), 0);
+	gl.uniform1i(gl.getUniformLocation(this.shaderProgram, "uSampler"), 0);
 
-	gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexBuffer);
-	gl.vertexAttribPointer(vPosition, squareVertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
-	gl.bindBuffer(gl.ARRAY_BUFFER, squareTexBuffer);
-	gl.vertexAttribPointer(vTexCoord, squareTexBuffer.itemSize, gl.FLOAT, false, 0, 0);
-	setMatrixUniforms(gl);
-	gl.drawArrays(gl.TRIANGLE_STRIP, 0, squareVertexBuffer.numItems);
+	gl.bindBuffer(gl.ARRAY_BUFFER, this.squareVertexBuffer);
+	gl.vertexAttribPointer(this.vPosition, this.squareVertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
+	gl.bindBuffer(gl.ARRAY_BUFFER, this.squareTexBuffer);
+	gl.vertexAttribPointer(this.vTexCoord, this.squareTexBuffer.itemSize, gl.FLOAT, false, 0, 0);
+	this.setMatrixUniforms(gl);
+	gl.drawArrays(gl.TRIANGLE_STRIP, 0, this.squareVertexBuffer.numItems);
 }
 
-function drawPolyline3d(polyline)
+View3d.prototype.drawPolyline = function(polyline)
 {
 }
 
-function drawPoints3d(points)
+View3d.prototype.drawPoints = function(points)
 {
 }
 
-function drawSelectionBox3d(x1, y1, x2, y2)
+View3d.prototype.drawSelectionBox = function(x1, y1, x2, y2)
 {
 }
 
-function drawScene3d(gl) 
+View3d.prototype.drawScene = function(gl) 
 {
-
-	mMatrix = frustum.transform;
-	frustum.moveForward(-.01);
+    if (this.textureObject == undefined)
+	    return;
+		
+	this.mMatrix = this.frustum.transform;
+	//frustum.moveForward(-.01);
 	gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
 
-	gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexBuffer);
-	gl.vertexAttribPointer(vPosition, triangleVertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
-	gl.bindBuffer(gl.ARRAY_BUFFER, triangleTexBuffer);
-	gl.vertexAttribPointer(vTexCoord, triangleTexBuffer.itemSize, gl.FLOAT, false, 0, 0);
-	setMatrixUniforms(gl);
-    showalert(triangleVertexBuffer);
+	gl.bindBuffer(gl.ARRAY_BUFFER, this.triangleVertexBuffer);
+	gl.vertexAttribPointer(this.vPosition, this.triangleVertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
+	gl.bindBuffer(gl.ARRAY_BUFFER, this.triangleTexBuffer);
+	gl.vertexAttribPointer(this.vTexCoord, this.triangleTexBuffer.itemSize, gl.FLOAT, false, 0, 0);
+	this.setMatrixUniforms(gl);
+    //showalert(triangleVertexBuffer);
 
 	gl.activeTexture(gl.TEXTURE0);
-	gl.bindTexture(gl.TEXTURE_2D, textureObject);
-	gl.uniform1i(gl.getUniformLocation(shaderProgram, "uSampler"), 0);
+	gl.bindTexture(gl.TEXTURE_2D, this.textureObject);
+	gl.uniform1i(gl.getUniformLocation(this.shaderProgram, "uSampler"), 0);
 
-	gl.drawArrays(gl.TRIANGLES, 0, triangleVertexBuffer.numItems);
+	gl.drawArrays(gl.TRIANGLES, 0, this.triangleVertexBuffer.numItems);
 
 
-	gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexBuffer);
-	gl.vertexAttribPointer(vPosition, squareVertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
-	gl.bindBuffer(gl.ARRAY_BUFFER, squareTexBuffer);
-	gl.vertexAttribPointer(vTexCoord, squareTexBuffer.itemSize, gl.FLOAT, false, 0, 0);
-	setMatrixUniforms(gl);
-	gl.drawArrays(gl.TRIANGLE_STRIP, 0, squareVertexBuffer.numItems);
+	gl.bindBuffer(gl.ARRAY_BUFFER, this.squareVertexBuffer);
+	gl.vertexAttribPointer(this.vPosition, this.squareVertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
+	gl.bindBuffer(gl.ARRAY_BUFFER, this.squareTexBuffer);
+	gl.vertexAttribPointer(this.vTexCoord, this.squareTexBuffer.itemSize, gl.FLOAT, false, 0, 0);
+	this.setMatrixUniforms(gl);
+	gl.drawArrays(gl.TRIANGLE_STRIP, 0, this.squareVertexBuffer.numItems);
 		
 	//if (coords3d.length >= 6) {
 	//	gl.bindBuffer(gl.ARRAY_BUFFER, polyBuffer);
@@ -317,11 +332,12 @@ function drawScene3d(gl)
 	//}
 }
 
-function setMatrixUniforms(gl) {
-	gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, new Float32Array(pMatrix));
-	gl.uniformMatrix4fv(shaderProgram.mMatrixUniform, false, new Float32Array(mMatrix));
+View3d.prototype.setMatrixUniforms = function(gl) 
+{
+	gl.uniformMatrix4fv(this.shaderProgram.pMatrixUniform, false, new Float32Array(this.pMatrix));
+	gl.uniformMatrix4fv(this.shaderProgram.mMatrixUniform, false, new Float32Array(this.mMatrix));
 }
 
-function updateScene()
+View3d.prototype.updateScene = function()
 {
 }

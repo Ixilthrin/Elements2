@@ -1,4 +1,8 @@
-function createContext2d(canvas) 
+function View2d()
+{
+}
+
+View2d.prototype.createContext = function(canvas) 
 {
 	var context;
 	try {
@@ -11,21 +15,21 @@ function createContext2d(canvas)
 	return context;
 }
 
-function initializeView2d(context)
+View2d.prototype.initializeView = function(context)
 {
 }
 
-function eraseView2d(context)
+View2d.prototype.eraseView = function(context)
 {
     context.clearRect(0, 0, canvas.width, canvas.height);
 }
 
-function drawTextbox2d(context, imageData, x, y, width, height)
+View2d.prototype.drawTextbox = function(context, imageData, x, y, width, height)
 {
     context.putImageData(imageData, x, y);
 }
 
-function drawPolyline2d(polyline)
+View2d.prototype.drawPolyline = function(polyline)
 {
     for (var seg = 0; seg < polyline.length; seg = seg + 1) {
         var segment = polyline[seg];
@@ -44,7 +48,7 @@ function drawPolyline2d(polyline)
     }
 }
 
-function drawPoints2d(points)
+View2d.prototype.drawPoints = function(points)
 {
     for (var seg = 0; seg < points.length; seg = seg + 1) {
         var segment = points[seg];
@@ -66,7 +70,7 @@ function drawPoints2d(points)
     }
 }
 
-function drawSelectionBox2d(x1, y1, x2, y2)
+View2d.prototype.drawSelectionBox = function(x1, y1, x2, y2)
 {
         context.beginPath();
         context.lineWidth = 1;
@@ -77,4 +81,8 @@ function drawSelectionBox2d(x1, y1, x2, y2)
         context.lineTo(x1, y2);
         context.lineTo(x1, y1);
         context.stroke();
+}
+
+View2d.prototype.drawScene = function(context)
+{
 }
