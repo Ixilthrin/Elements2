@@ -3,7 +3,8 @@ function View3d()
 this.drawCount1 = 0;
 this.frustum = new Frustum();
 this.rotationY = .1;
-this.shaderProgram;
+this.meshShaderProgram;
+this.lineShaderProgram;
 this.vPosition;
 this.vTexCoord;
 this.mMatrix = this.frustum.identity;
@@ -23,6 +24,7 @@ this.viewCanvas;
 this.acanvas;
 this.acontext;
 this.tex;
+this.drawing = false;
 }
 
 
@@ -50,9 +52,10 @@ View3d.prototype.createContext = function(canvas) {
 }
 
 View3d.prototype.initializeView = function(gl) {
-	this.initShaders(gl);
+	this.initMeshShaders(gl);
+	this.initLineShaders(gl);
 	this.initBuffers(gl);
-	gl.clearColor(1, 1, 1, 1);
+	gl.clearColor(1, 0, 0, 1);
 	gl.enable(gl.DEPTH_TEST);
     var image = new Image();
 	image.src = "planet-earth.jpg";
@@ -106,31 +109,64 @@ View3d.prototype.createTexture = function(gl, image)
 	//gl.bindTexture(gl.TEXTURE_2D, null);
 }
 
-View3d.prototype.initShaders = function(gl)
+View3d.prototype.initMeshShaders = function(gl)
 {
-	var fragmentShader = this.getShader(gl, "shader-fs");
+	var fragmentShader = this.getShader(gl, "mesh-shader-fs");
 	
-	var vertexShader = this.getShader(gl, "shader-vs");
+	var vertexShader = this.getShader(gl, "mesh-shader-vs");
 
-	this.shaderProgram = gl.createProgram();
-	gl.attachShader(this.shaderProgram, vertexShader);
-	gl.attachShader(this.shaderProgram, fragmentShader);
-	gl.linkProgram(this.shaderProgram);
+	this.meshShaderProgram = gl.createProgram();
+	gl.attachShader(this.meshShaderProgram, vertexShader);
+	gl.attachShader(this.meshShaderProgram, fragmentShader);
+	gl.linkProgram(this.meshShaderProgram);
 
-	if (!gl.getProgramParameter(this.shaderProgram, gl.LINK_STATUS)) {
+	if (!gl.getProgramParameter(this.meshShaderProgram, gl.LINK_STATUS)) {
 		alert("Could not initialize shaders");
 	}
+}
 
-	gl.useProgram(this.shaderProgram);
+View3d.prototype.useMeshShaders = function(gl)
+{
+	gl.useProgram(this.meshShaderProgram);
 
-	this.vPosition = gl.getAttribLocation(this.shaderProgram, "vPosition");
+	this.vPosition = gl.getAttribLocation(this.meshShaderProgram, "vPosition");
 	gl.enableVertexAttribArray(this.vPosition);
 
-	this.vTexCoord = gl.getAttribLocation(this.shaderProgram, "vTexCoord");
+	this.vTexCoord = gl.getAttribLocation(this.meshShaderProgram, "vTexCoord");
 	gl.enableVertexAttribArray(this.vTexCoord);
 	
-	this.shaderProgram.pMatrixUniform = gl.getUniformLocation(this.shaderProgram, "pMatrix");
-	this.shaderProgram.mMatrixUniform = gl.getUniformLocation(this.shaderProgram, "mMatrix");
+	this.meshShaderProgram.pMatrixUniform = gl.getUniformLocation(this.meshShaderProgram, "pMatrix");
+	this.meshShaderProgram.mMatrixUniform = gl.getUniformLocation(this.meshShaderProgram, "mMatrix");
+}
+
+View3d.prototype.initLineShaders = function(gl)
+{
+	var fragmentShader = this.getShader(gl, "line-shader-fs");
+	
+	var vertexShader = this.getShader(gl, "line-shader-vs");
+
+	this.lineShaderProgram = gl.createProgram();
+	gl.attachShader(this.lineShaderProgram, vertexShader);
+	gl.attachShader(this.lineShaderProgram, fragmentShader);
+	gl.linkProgram(this.lineShaderProgram);
+
+	if (!gl.getProgramParameter(this.lineShaderProgram, gl.LINK_STATUS)) {
+		alert("Could not initialize shaders");
+	}
+}
+
+View3d.prototype.useLineShaders = function(gl)
+{
+	gl.useProgram(this.lineShaderProgram);
+
+	this.vPosition = gl.getAttribLocation(this.lineShaderProgram, "vPosition");
+	gl.enableVertexAttribArray(this.vPosition);
+
+	this.vTexCoord = gl.getAttribLocation(this.lineShaderProgram, "vTexCoord");
+	gl.enableVertexAttribArray(this.vTexCoord);
+	
+	this.lineShaderProgram.pMatrixUniform = gl.getUniformLocation(this.lineShaderProgram, "pMatrix");
+	this.lineShaderProgram.mMatrixUniform = gl.getUniformLocation(this.lineShaderProgram, "mMatrix");
 }
 
 View3d.prototype.getShader = function(gl, id) 
@@ -211,8 +247,8 @@ View3d.prototype.initBuffers = function(gl)
 	this.squareTexBuffer.itemSize = 2;
 	this.squareTexBuffer.numItems = 4;
 
-	//polyBuffer = gl.createBuffer();
-	//polyBuffer.itemSize = 3;
+	this.polyBuffer = gl.createBuffer();
+	this.polyBuffer.itemSize = 3;
 	//if (coords3d.length >= 6) {
 	//	gl.bindBuffer(gl.ARRAY_BUFFER, polyBuffer);
 	//	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(coords3d), gl.DYNAMIC_DRAW);
@@ -236,6 +272,7 @@ View3d.prototype.eraseView = function(gl)
 
 View3d.prototype.drawTextbox = function(gl, imageData, wx, wy, width, height)
 {
+	this.useMeshShaders(gl);
     //gl.deleteBuffer(squareVertexBuffer);
 	//squareVertexBuffer = gl.createBuffer();    
 	gl.bindBuffer(gl.ARRAY_BUFFER, this.squareVertexBuffer);
@@ -272,18 +309,53 @@ View3d.prototype.drawTextbox = function(gl, imageData, wx, wy, width, height)
 	
 	this.createTextureFromImageData(gl, imageData);
 	
-	gl.uniform1i(gl.getUniformLocation(this.shaderProgram, "uSampler"), 0);
+	gl.uniform1i(gl.getUniformLocation(this.meshShaderProgram, "uSampler"), 0);
 
 	gl.bindBuffer(gl.ARRAY_BUFFER, this.squareVertexBuffer);
 	gl.vertexAttribPointer(this.vPosition, this.squareVertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
 	gl.bindBuffer(gl.ARRAY_BUFFER, this.squareTexBuffer);
 	gl.vertexAttribPointer(this.vTexCoord, this.squareTexBuffer.itemSize, gl.FLOAT, false, 0, 0);
-	this.setMatrixUniforms(gl);
+	this.setMatrixUniformsForMeshShaders(gl);
 	gl.drawArrays(gl.TRIANGLE_STRIP, 0, this.squareVertexBuffer.numItems);
 }
 
-View3d.prototype.drawPolyline = function(polyline)
+View3d.prototype.drawPolyline = function(gl, polyline)
 {
+if (this.drawing)
+return;
+this.drawing = true;
+	this.useLineShaders(gl);
+    if (polyline.length < 1)
+        return;
+	this.polyBuffer = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, this.polyBuffer);
+	var vertices = [];
+	for (var j = 0; j < polyline.length; j = j + 1)
+	{
+	for (var i = 0; i < polyline[0].values.length; i = i + 2)
+	//for (var i = 0; i < 5; i = i + 1)
+	{
+	    var coord = this.frustum.convertScreenToWorld(
+		    polyline[j].values[i], polyline[j].values[i+1], this.screenWidth, this.screenHeight);
+	    vertices.push(coord[0]);
+		vertices.push(coord[1]);
+		vertices.push(-1);
+	}
+	}
+	vertices.push(0, 0, -1);
+	if (vertices.length < 6)
+	    return;
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.DYNAMIC_DRAW);
+	
+	this.mMatrix = this.frustum.transform;
+	
+	gl.vertexAttribPointer(this.vPosition, 3, gl.FLOAT, false, 0, 0);
+	this.setMatrixUniformsForLineShaders(gl);
+	var count = vertices.length/3 -1;
+	//alert(count);
+	gl.drawArrays(gl.LINE_STRIP, 0, count);
+	this.drawing = false;
+	gl.deleteBuffer(this.polyBuffer);
 }
 
 View3d.prototype.drawPoints = function(points)
@@ -296,6 +368,7 @@ View3d.prototype.drawSelectionBox = function(x1, y1, x2, y2)
 
 View3d.prototype.drawScene = function(gl) 
 {
+	this.useMeshShaders(gl);
     if (this.textureObject == undefined)
 	    return;
 		
@@ -307,12 +380,12 @@ View3d.prototype.drawScene = function(gl)
 	gl.vertexAttribPointer(this.vPosition, this.triangleVertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
 	gl.bindBuffer(gl.ARRAY_BUFFER, this.triangleTexBuffer);
 	gl.vertexAttribPointer(this.vTexCoord, this.triangleTexBuffer.itemSize, gl.FLOAT, false, 0, 0);
-	this.setMatrixUniforms(gl);
+	this.setMatrixUniformsForMeshShaders(gl);
     //showalert(triangleVertexBuffer);
 
 	gl.activeTexture(gl.TEXTURE0);
 	gl.bindTexture(gl.TEXTURE_2D, this.textureObject);
-	gl.uniform1i(gl.getUniformLocation(this.shaderProgram, "uSampler"), 0);
+	gl.uniform1i(gl.getUniformLocation(this.meshShaderProgram, "uSampler"), 0);
 
 	gl.drawArrays(gl.TRIANGLES, 0, this.triangleVertexBuffer.numItems);
 
@@ -321,21 +394,27 @@ View3d.prototype.drawScene = function(gl)
 	gl.vertexAttribPointer(this.vPosition, this.squareVertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
 	gl.bindBuffer(gl.ARRAY_BUFFER, this.squareTexBuffer);
 	gl.vertexAttribPointer(this.vTexCoord, this.squareTexBuffer.itemSize, gl.FLOAT, false, 0, 0);
-	this.setMatrixUniforms(gl);
+	this.setMatrixUniformsForMeshShaders(gl);
 	gl.drawArrays(gl.TRIANGLE_STRIP, 0, this.squareVertexBuffer.numItems);
 		
 	//if (coords3d.length >= 6) {
 	//	gl.bindBuffer(gl.ARRAY_BUFFER, polyBuffer);
 	//	gl.vertexAttribPointer(vPosition, polyBuffer.itemSize, gl.FLOAT, false, 0, 0);
-	//	setMatrixUniforms(gl);
+	//	setMatrixUniformsForMeshShaders(gl);
 	//	gl.drawArrays(gl.LINE_STRIP, 0, polyBuffer.numItems);
 	//}
 }
 
-View3d.prototype.setMatrixUniforms = function(gl) 
+View3d.prototype.setMatrixUniformsForMeshShaders = function(gl) 
 {
-	gl.uniformMatrix4fv(this.shaderProgram.pMatrixUniform, false, new Float32Array(this.pMatrix));
-	gl.uniformMatrix4fv(this.shaderProgram.mMatrixUniform, false, new Float32Array(this.mMatrix));
+	gl.uniformMatrix4fv(this.meshShaderProgram.pMatrixUniform, false, new Float32Array(this.pMatrix));
+	gl.uniformMatrix4fv(this.meshShaderProgram.mMatrixUniform, false, new Float32Array(this.mMatrix));
+}
+
+View3d.prototype.setMatrixUniformsForLineShaders = function(gl) 
+{
+	gl.uniformMatrix4fv(this.lineShaderProgram.pMatrixUniform, false, new Float32Array(this.pMatrix));
+	gl.uniformMatrix4fv(this.lineShaderProgram.mMatrixUniform, false, new Float32Array(this.mMatrix));
 }
 
 View3d.prototype.updateScene = function()

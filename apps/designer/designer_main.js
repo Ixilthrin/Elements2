@@ -1,5 +1,5 @@
 // designer_main.js
-var dimension = 2;
+var dimension = 3;
 var viewManager;
 var canvas;
 var context;
@@ -98,9 +98,9 @@ function draw()
 
 	
     // Draw the polylines
-    if (inputMode != "points" && !showPoints)
+    if (inputMode != "points" && !showPoints && thePage.segments.length > 0)
     {
-	    viewManager.drawPolyline(thePage.segments);
+	    viewManager.drawPolyline(context, thePage.segments);
     }
 
     // Draw the points

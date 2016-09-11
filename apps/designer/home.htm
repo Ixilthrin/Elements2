@@ -3,7 +3,7 @@
 <html>
 
 <head>
-<script id="shader-vs" type="x-shader/x-vertex">
+<script id="mesh-shader-vs" type="x-shader/x-vertex">
     attribute vec3 vPosition;
     attribute vec2 vTexCoord;
 
@@ -17,7 +17,7 @@
         vTextureCoord = vTexCoord;
     }
 </script>
-<script id="shader-fs" type="x-shader/x-fragment">
+<script id="mesh-shader-fs" type="x-shader/x-fragment">
     precision mediump float;
 
     varying vec2 vTextureCoord;
@@ -25,6 +25,31 @@
 
     void main(void) {
         gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
+    }
+</script>
+<script id="line-shader-vs" type="x-shader/x-vertex">
+    attribute vec3 vPosition;
+    attribute vec2 vTexCoord;
+
+    uniform mat4 mMatrix;
+    uniform mat4 pMatrix;
+
+    varying vec2 vTextureCoord;
+
+    void main(void) {
+        gl_Position = pMatrix * mMatrix * vec4(vPosition, 1.0);
+        //vTextureCoord = vTexCoord;
+    }
+</script>
+<script id="line-shader-fs" type="x-shader/x-fragment">
+    precision mediump float;
+
+    varying vec2 vTextureCoord;
+    uniform sampler2D uSampler;
+
+    void main(void) {
+        //gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
+		gl_FragColor = vec4(0, 0, 0, 1);
     }
 </script>
 </head>

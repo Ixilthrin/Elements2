@@ -30,7 +30,7 @@ function loadNextScript(index)
 	
 	var script = document.createElement("script");
 	script.type = "text/javascript";
-	script.src = scripts[index] + "?v=4";  // Adding a version to force browser to reload the resource
+	script.src = scripts[index] + "?v=10";  // Adding a version to force browser to reload the resource
 	body.appendChild(script);
 	script.onload = function() { loadNextScript(index + 1); }
 }

@@ -29,7 +29,7 @@ View2d.prototype.drawTextbox = function(context, imageData, x, y, width, height)
     context.putImageData(imageData, x, y);
 }
 
-View2d.prototype.drawPolyline = function(polyline)
+View2d.prototype.drawPolyline = function(context, polyline)
 {
     for (var seg = 0; seg < polyline.length; seg = seg + 1) {
         var segment = polyline[seg];
