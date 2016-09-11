@@ -1,5 +1,6 @@
 // designer_main.js
 var dimension = 2;
+var viewManager;
 var canvas;
 var context;
 var pages = new Array();
@@ -68,15 +69,8 @@ function draw()
 	    needsRedraw = false;
 	else
 	    return;
-	
-	if (dimension == 2)
-	{
-	    eraseView2d(context);
-	}
-	else
-	{
-	    eraseView3d(context);
-	}
+		
+    viewManager.eraseView(context);
 	
     for (var i = 0; i < thePage.boxes.length; i++) {
         var isSelected = false;
@@ -92,17 +86,11 @@ function draw()
 	
 	    if (isSelected && textBox.selectedImageData != undefined)
 		{
-		    if (dimension == 2)
-	            drawTextbox2d(context, textBox.selectedImageData, xPos, yPos - textBox.fontHeight, textBox.width, textBox.height);
-			else
-	            drawTextbox3d(context, textBox.selectedImageData, xPos, yPos - textBox.fontHeight, textBox.width, textBox.height);
-        }
+	        viewManager.drawTextbox(context, textBox.selectedImageData, xPos, yPos - textBox.fontHeight, textBox.width, textBox.height);
+		}
 	    else if (textBox.imageData != undefined)
 		{
-		    if (dimension == 2)
-	            drawTextbox2d(context, textBox.imageData, xPos, yPos - textBox.fontHeight, textBox.width, textBox.height);
-			else
-	            drawTextbox3d(context, textBox.imageData, xPos, yPos - textBox.fontHeight, textBox.width, textBox.height);
+	        viewManager.drawTextbox(context, textBox.imageData, xPos, yPos - textBox.fontHeight, textBox.width, textBox.height);
 		}
     }
 	if (thePage.segments == null)
@@ -112,26 +100,17 @@ function draw()
     // Draw the polylines
     if (inputMode != "points" && !showPoints)
     {
-	    if (dimension == 2)
-	        drawPolyline2d(thePage.segments);
-		else
-		    drawPolyline3d(thePage.segments);
+	    viewManager.drawPolyline(thePage.segments);
     }
 
     // Draw the points
     if (inputMode == "points" || showPoints) {
-	    if (dimension == 2)
-	        drawPoints2d(thePage.segments);
-		else
-	        drawPoints3d(thePage.segments);
+	    viewManager.drawPoints(thePage.segments);
     }
 
     // Draw selection box
     if (selectionBoxInitialX > -1 && selectionBoxFinalX > -1) {
-	    if (dimension == 2)
-	        drawSelectionBox2d(selectionBoxInitialX, selectionBoxInitialY, selectionBoxFinalX, selectionBoxFinalY);
-		else
-	        drawSelectionBox3d(selectionBoxInitialX, selectionBoxInitialY, selectionBoxFinalX, selectionBoxFinalY);
+	    viewManager.drawSelectionBox(selectionBoxInitialX, selectionBoxInitialY, selectionBoxFinalX, selectionBoxFinalY);
     }
 	
     if (text && text.length >= 0) {
@@ -150,19 +129,12 @@ function draw()
 	
 	    if (newObject.imageData != undefined)
 		{
-		    if (dimension == 2)
-			{
-	            drawTextbox2d(context, newObject.imageData, startX, startY - newObject.fontHeight);
-			}
-			else
-			{
-	            drawTextbox3d(context, newObject.imageData, startX, startY - newObject.fontHeight, newObject.width, newObject.height);
-			}
+	        viewManager.drawTextbox(context, newObject.imageData, startX, 
+			    startY - newObject.fontHeight, newObject.width, newObject.height);
 		}
     }
 	
-	if (dimension == 3)
-	    drawScene3d(context);
+	viewManager.drawScene(context);
 }
 
 function drawTextInBox(box, xPos, yPos, isSelected, imageIndex)
@@ -1436,18 +1408,12 @@ function modifySegmentScaleVertical(segment, increasing)
 function createContext(canvas)
 {
 	needsRedraw = true;
-    if (dimension == 2)
-	    return createContext2d(canvas);
-	return createContext3d(canvas);
+	return viewManager.createContext(canvas);
 }
 
 function initializeView(context)
 {
-   if (dimension == 2)
-       initializeView2d(context);
-   else
-       initializeView3d(context);
-	   
+    viewManager.initializeView(context);
 }
 
 function setupView()
@@ -1458,6 +1424,10 @@ function setupView()
 
 function main() 
 {
+   if (dimension == 2)
+       viewManager = new View2d();
+   else 
+       viewManager = new View3d(); 
    particlesCreated = false;
    initTime = date.getTime();
    
