@@ -1,19 +1,14 @@
 var scripts = new Array();
-scripts.push("../../projection/Frustum.js");
-scripts.push("../../html/factory.js");
-scripts.push("../../debugging/debugging.js");
-scripts.push("../../geometry2d/shapes.js");
-scripts.push("../../geometry2d/polyline.js");
-scripts.push("../../textedit/edittext.js");
+scripts.push("Frustum.js");
+scripts.push("Noise.js");
 scripts.push("run.js");
-scripts.push("view2d.js");
-scripts.push("view3d.js");
-scripts.push("designer_main.js");
+scripts.push("main.js");
 
 var debugging = false;
 
 function configureAndRun()
 {
+alert();
     loadStyle();
     loadNextScript(0);
 }
@@ -21,7 +16,7 @@ function configureAndRun()
 function loadNextScript(index)
 {
     if (index >= scripts.length)
-	{
+    {
 	    run();
 	    return;
     }

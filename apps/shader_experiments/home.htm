@@ -1,0 +1,38 @@
+<html>
+<head>
+<title>Simple 3D Viewer</title>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<script id="shader-vs" type="x-shader/x-vertex">
+    attribute vec3 vPosition;
+    attribute vec2 vTexCoord;
+
+    uniform mat4 mMatrix;
+    uniform mat4 pMatrix;
+
+    varying vec2 vTextureCoord;
+
+    void main(void) {
+        gl_Position = pMatrix * mMatrix * vec4(vPosition, 1.0);
+        vTextureCoord = vTexCoord;
+    }
+</script>
+<script id="shader-fs" type="x-shader/x-fragment">
+    precision mediump float;
+
+    varying vec2 vTextureCoord;
+    uniform sampler2D uSampler;
+
+    void main(void) {
+        gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
+        //gl_FragColor = texture2D(uSampler, vec2(.5, .5));
+        //gl_FragColor = vec4(0.5, 0.0, 0.0, 1.0);
+        //gl_FragColor = vec4(vTextureCoord[0], 0, 0, 1.0);
+    }
+</script>
+</head>
+<body onload="configureAndRun();">
+    <canvas id="canvas" style="outline: none;" width="700" height="700" tabindex="1"></canvas>
+    <script type="text/javascript" src="configuration.js?v=14"></script>
+</body>
+</html>
+
