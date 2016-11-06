@@ -8,7 +8,6 @@ var debugging = false;
 
 function configureAndRun()
 {
-alert();
     loadStyle();
     loadNextScript(0);
 }
