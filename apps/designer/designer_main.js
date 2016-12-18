@@ -364,7 +364,7 @@ function switchModeKeyCommand()
     if (inputMode == "text")
         inputMode = "draw";
     else if (inputMode == "draw")
-        inputMode = "points";
+        inputMode = "text";
     else if (inputMode == "points")
         inputMode = "text";
 
