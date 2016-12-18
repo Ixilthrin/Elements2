@@ -8,7 +8,7 @@ scripts.push("../../textedit/edittext.js");
 scripts.push("run.js");
 scripts.push("view2d.js");
 scripts.push("view3d.js");
-scripts.push("designer_main.js");
+scripts.push("designer_main.js?v=14");
 
 var debugging = false;
 

@@ -1,5 +1,5 @@
 // designer_main.js
-var dimension = 3;
+var dimension = 2;
 var viewManager;
 var canvas;
 var context;
@@ -350,10 +350,27 @@ function getBackgroundGray()
 
 function switchMode()
 {
-	needsRedraw = true;
+    needsRedraw = true;
+
     var modeElement = document.getElementById("mode");
     if (modeElement) {
-	    inputMode = modeElement.value;
+        inputMode = modeElement.value;
+    }
+}
+
+function switchModeKeyCommand()
+{
+    needsRedraw = true;
+    if (inputMode == "text")
+        inputMode = "draw";
+    else if (inputMode == "draw")
+        inputMode = "points";
+    else if (inputMode == "points")
+        inputMode = "text";
+
+    var modeElement = document.getElementById("mode");
+    if (modeElement) {
+        modeElement.value = inputMode;
     }
 }
 
@@ -1885,7 +1902,7 @@ function main()
 	       return;
 		   
        if (code == 27) {
-           switchMode();
+           switchModeKeyCommand();
            return;
        }
        if (inputMode == "draw") {
