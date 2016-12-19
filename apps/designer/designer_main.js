@@ -368,6 +368,7 @@ function setLineMode()
 		    lineMode = "fixed";
 		}
 	}
+	canvas.focus();
 }
 
 function setSmoothMode()
@@ -384,6 +385,7 @@ function setSmoothMode()
 		    smoothMode = "raw";
 		}
 	}
+	canvas.focus();
 }
 
 function switchMode()
@@ -394,6 +396,7 @@ function switchMode()
     if (modeElement) {
         inputMode = modeElement.value;
     }
+	canvas.focus();
 }
 
 function switchModeKeyCommand()
@@ -1890,7 +1893,7 @@ function main()
    
    document.addEventListener("keydown", function(e) {
        e.preventDefault();
-	needsRedraw = true;
+	   needsRedraw = true;
 	   
 	   if (e.keyCode == 91) // Mac command key
 	       return;
@@ -2411,12 +2414,13 @@ function updatePage()
     if (pageNumber) {
         pageNumber.innerHTML = "Page " + (pageIndex + 1) + " / " + pages.length;
     }
+	canvas.focus();
 }
 
 function runCode()
 { 
 	needsRedraw = true;
-    if (confirm("Clear everything and import new content?")) 
+    if (true/*confirm("Clear everything and import new content?")*/) 
     {
         addCurrentText();
         var code = document.getElementById("code");
@@ -2432,7 +2436,7 @@ function deleteSelection()
     if (thePage.boxes.length == 0 && thePage.segments.length == 0) {
         return;
     }
-    if (inputMode == "text" && confirm("Delete selected items?")) {
+    if (inputMode == "text"/*&& confirm("Delete selected items?")*/) {
         for (var i = 0; i < selectedIndices.length; i = i + 1) {
             thePage.boxes[selectedIndices[i]].text = "";
 			thePage.boxes[selectedIndices[i]].imageData = undefined;
@@ -2559,7 +2563,7 @@ function checkDistance(range, x1, y1, x2, y2)
 function clearAll()
 {
 	needsRedraw = true;
-    if (confirm("Clear everything?")) {
+    if (true/*confirm("Clear everything?")*/) {
         pages = new Array();
         thePage = createPage();
         pages.push(thePage);
