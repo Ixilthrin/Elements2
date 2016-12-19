@@ -13,11 +13,15 @@ function setupControls()
 	var div = document.getElementsByTagName("div").item(0);
 	addCanvas(body, "1000", "540", "canvas", "1");
 	addBreak(body);
-	var modes = ["text", "draw", "points"];
-	addChooser(div, "mode", modes, 0, function() { switchMode(); });
+	addLabel(div, "pagenumber");
 	addIconButton(div, "", "Previous Page", function() { previousPage(); }, "previouspage.jpg");
 	addIconButton(div, "", "Next Page", function() { nextPage(); }, "nextpage.jpg");
-	addLabel(div, "pagenumber");
+	var modes = ["text", "draw", "points"];
+	addChooser(div, "mode", modes, 0, function() { switchMode(); });
+	var lineModes = ["freestyle line mode", "straight line mode"];
+	addChooser(div, "linemode", lineModes, 0, function() { setLineMode(); });
+	var smoothModes = ["smooth draw", "raw draw"];
+	addChooser(div, "smoothmode", smoothModes, 0, function() { setSmoothMode(); });
 	addBreak(div);
 	addButton(div, "red", "    ", function() { setColor("rgb(255, 0, 0)"); });
 	addButton(div, "green", "    ", function() { setColor("rgb(0, 102, 0)"); });

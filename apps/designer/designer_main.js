@@ -38,8 +38,8 @@ var selectionBoxFinalX = -1;
 var selectionBoxFinalY = -1;
 var mouseX = startX;
 var mouseY = startY;
-var minFontHeight = 14;
-var fontHeight = 14;
+var minFontHeight = 8;
+var fontHeight = 20;
 var fontName = "Georgia";
 var fontType = ""; // Normal
 var maxWidth = 0;
@@ -60,6 +60,12 @@ var showPoints = false;
 var needsRedraw = true;
 
 var addingProperty = false;
+
+var lineMode = "free"; // free or fixed
+var smoothMode = "smooth"; // smooth or raw
+var lineOrientationTolerance = 5;
+var previousMouseX = 0;
+var previousMouseY = 0;
 
 function draw() 
 {
@@ -346,6 +352,38 @@ function getBackgroundGray()
 {
    var grayVal = 230;
    return "rgb(" + grayVal + "," + grayVal + "," + grayVal + ")";
+}
+
+function setLineMode()
+{
+    var modeElement = document.getElementById("linemode");
+	if (modeElement)
+	{
+	    if (modeElement.value == "freestyle line mode")
+		{
+		    lineMode = "free";
+		}
+		else
+		{
+		    lineMode = "fixed";
+		}
+	}
+}
+
+function setSmoothMode()
+{
+    var modeElement = document.getElementById("smoothmode");
+	if (modeElement)
+	{
+	    if (modeElement.value == "smooth draw")
+		{
+		    smoothMode = "smooth";
+		}
+		else
+		{
+		    smoothMode = "raw";
+		}
+	}
 }
 
 function switchMode()
@@ -949,7 +987,6 @@ function updateSegmentBounds(segment) {
 }
 
 function addPointToSegment(segment, x, y) {
-	needsRedraw = true;
     segment.values.push(x);
     segment.values.push(y);
     if (x < segment.minX) {
@@ -964,6 +1001,7 @@ function addPointToSegment(segment, x, y) {
     if (y > segment.maxY) {
         segment.maxY = y;
     }
+    needsRedraw = true;
 }
 
 function copySegment(segment) 
@@ -1649,7 +1687,50 @@ function main()
            } else if (inputMode == "draw") {
                var curX = document.body.scrollLeft + e.clientX - canvas.offsetLeft;
                var curY = document.body.scrollTop + e.clientY - canvas.offsetTop;
-               addPointToSegment(currentSegment, curX, curY);
+			   if (lineMode == "free")
+			   {
+                   addPointToSegment(currentSegment, curX, curY);
+			   }
+			   else
+			   {
+			       var numberOfPoints = currentSegment.values.length;
+				   var previousX = currentSegment.values[numberOfPoints - 2];
+				   var previousY = currentSegment.values[numberOfPoints - 1];
+				   var xDiff = Math.abs(curX - previousMouseX);
+				   var yDiff = Math.abs(curY - previousMouseY);
+				   
+				   if (xDiff < 2 && yDiff < 2)
+				       return;
+					   
+				   var horizontal = true;
+				   
+				   if (numberOfPoints == 2)
+				   {
+				   if (yDiff > xDiff)
+				       horizontal = false;
+				   }
+				   else
+				   {
+				   var previousPreviousX = currentSegment.values[numberOfPoints - 4];
+				   var previousPreviousY = currentSegment.values[numberOfPoints - 3];
+				   var previousXDiff = Math.abs(previousX - previousPreviousX);
+				   var previousYDiff = Math.abs(previousY - previousPreviousY);
+				   horizontal = previousXDiff > previousYDiff;
+				   
+				   if (horizontal && yDiff > xDiff + lineOrientationTolerance)
+				       horizontal = false;
+				   if (!horizontal && xDiff > yDiff + lineOrientationTolerance)
+				       horizontal = true;
+				   }
+				   
+				   if (horizontal)
+                       addPointToSegment(currentSegment, curX, previousY);
+				   else
+                       addPointToSegment(currentSegment, previousX, curY);
+					   
+				   previousMouseX = curX;
+				   previousMouseY = curY;
+			   }
            } 
            else if (inputMode == "points")
            {
@@ -1710,6 +1791,12 @@ function main()
            var curX = document.body.scrollLeft + e.clientX - canvas.offsetLeft;
            var curY = document.body.scrollTop + e.clientY - canvas.offsetTop;
            addPointToSegment(currentSegment, curX, curY);
+		   if (lineMode == "free" && smoothMode == "smooth")
+		   {
+		       currentSegment.values = adjustPointCount(currentSegment.values, 4);
+		       for (var i = 0; i < 5; i = i + 1)
+		           currentSegment.values = smoothify(currentSegment.values);
+		   }
        }
    });
    
@@ -1735,7 +1822,7 @@ function main()
    
    canvas.addEventListener("mousedown", function(e) {
        e.preventDefault();
-	   needsRedraw = true;
+       needsRedraw = true;
        canvas.focus();
        mouseIsDown = true;
        firstClick = true;
@@ -1791,6 +1878,8 @@ function main()
            thePage.segments.push(currentSegment);
            var curX = document.body.scrollLeft + e.clientX - canvas.offsetLeft;
            var curY = document.body.scrollTop + e.clientY - canvas.offsetTop;
+		   previousMouseX = curX;
+		   previousMouseY = curY;
            addPointToSegment(currentSegment, curX, curY);
        } else if (inputMode == "points")
        {

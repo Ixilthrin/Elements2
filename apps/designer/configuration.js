@@ -1,14 +1,19 @@
 var scripts = new Array();
-scripts.push("../../projection/Frustum.js");
-scripts.push("../../html/factory.js");
-scripts.push("../../debugging/debugging.js");
-scripts.push("../../geometry2d/shapes.js");
-scripts.push("../../geometry2d/polyline.js");
-scripts.push("../../textedit/edittext.js");
-scripts.push("run.js");
-scripts.push("view2d.js");
-scripts.push("view3d.js");
-scripts.push("designer_main.js?v=14");
+
+// Note the versions are arbitrary but these were added
+// so the resource would reload.  Otherwise the browser
+// was caching the source files and local changes
+// were not taking affect.
+scripts.push("../../projection/Frustum.js?v=12");
+scripts.push("../../html/factory.js?v=12");
+scripts.push("../../debugging/debugging.js?v=12");
+scripts.push("../../geometry2d/shapes.js?v=13");
+scripts.push("../../geometry2d/polyline.js?v=12");
+scripts.push("../../textedit/edittext.js?v=12");
+scripts.push("run.js?v=15");
+scripts.push("view2d.js?v=12");
+scripts.push("view3d.js?v=12");
+scripts.push("designer_main.js?v=15");
 
 var debugging = false;
 

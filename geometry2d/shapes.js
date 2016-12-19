@@ -120,34 +120,37 @@ function rectify(points, lineWidth) {
             maxY = points[i + 1];
         }
     }
+
     var rectangle = new Array();
-    var pointsOnSide = points.length / 16;
-    var xIncrement = (maxX - minX) / pointsOnSide;
-    var yIncrement = (maxY - minY) / pointsOnSide;
+    var xIncrement = 8;
+    var yIncrement = 8;
+	var horizontalPointCount = (maxX - minX) / xIncrement;
+	var verticalPointCount = (maxY - minY) / yIncrement;
+	
     var x = minX;
     var y = minY;
-    for (i = 0; i < pointsOnSide; i++) {
+    for (i = 0; i < horizontalPointCount; i++) {
         rectangle.push(x);
         rectangle.push(y);
         x += xIncrement;
     }
-    for (i = 0; i < pointsOnSide; i++) {
+    for (i = 0; i < verticalPointCount; i++) {
         rectangle.push(x);
         rectangle.push(y);
         y += yIncrement;
     }
-    for (i = 0; i < pointsOnSide; i++) {
+    for (i = 0; i < horizontalPointCount; i++) {
         rectangle.push(x);
         rectangle.push(y);
         x -= xIncrement;
     }
-    for (i = 0; i < pointsOnSide; i++) {
+    for (i = 0; i < verticalPointCount; i++) {
         rectangle.push(x);
         rectangle.push(y);
         y -= yIncrement;
     }
     rectangle.push(minX);
-    rectangle.push(minY - lineWidth / 2);
+    rectangle.push(minY);
     return rectangle;
 }
 
