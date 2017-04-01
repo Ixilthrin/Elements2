@@ -397,6 +397,7 @@ function switchMode()
         inputMode = modeElement.value;
     }
 	canvas.focus();
+	setCursorForMode(inputMode);
 }
 
 function switchModeKeyCommand()
@@ -413,6 +414,17 @@ function switchModeKeyCommand()
     if (modeElement) {
         modeElement.value = inputMode;
     }
+	setCursorForMode(inputMode);
+}
+
+function setCursorForMode(mode)
+{
+	if (mode == "text")
+	    canvas.style.cursor = "default";
+	else if (mode == "draw")
+	    canvas.style.cursor = "crosshair";
+	else if (mode == "points")
+	    canvas.style.cursor = "default";
 }
 
 var groupNames = new Array();
@@ -1567,7 +1579,8 @@ function main()
    
    canvas.addEventListener("mousemove", function(e) {
        e.preventDefault();
-	needsRedraw = true;
+	   needsRedraw = true;
+	   setCursorForMode(inputMode);
        if (mouseIsDown) {
            if (inputMode == "text") {
                if (selectedIndices.length > 0 || segmentsSelectedIndices.length > 0) {
@@ -1770,9 +1783,9 @@ function main()
    });
    
    canvas.addEventListener("mouseup", function(e) {
-           e.target.style.cursor = "default";
        mouseIsDown = false;
-	needsRedraw = true;
+	   needsRedraw = true;
+	   setCursorForMode(inputMode);
        if (inputMode == "text") {
            if (e.shiftKey) {
                return;
@@ -1796,7 +1809,7 @@ function main()
            addPointToSegment(currentSegment, curX, curY);
 		   if (lineMode == "free" && smoothMode == "smooth")
 		   {
-		       currentSegment.values = adjustPointCount(currentSegment.values, 4);
+		       currentSegment.values = adjustPointCount(currentSegment.values, 7);
 		       for (var i = 0; i < 5; i = i + 1)
 		           currentSegment.values = smoothify(currentSegment.values);
 		   }
@@ -1805,7 +1818,7 @@ function main()
    
    canvas.addEventListener("dblclick", function(e) {
        if (inputMode == "text") {
-	needsRedraw = true;
+	       needsRedraw = true;
            startX = document.body.scrollLeft + e.clientX - canvas.offsetLeft;
            startY = document.body.scrollTop + e.clientY - canvas.offsetTop;
            checkCursorIntersection(startX, startY, false);
