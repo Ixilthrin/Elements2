@@ -198,7 +198,7 @@ function drawTextInBox(box, xPos, yPos, isSelected, imageIndex)
     var width = 0;
     backBuffer.font = box.fontType + " " + box.fontHeight + "px " + box.fontName;
     for (var i = 0; i < lines.length; i++) {
-        var currentWidth = backBuffer.measureText(lines[i]).width;
+        var currentWidth = backBuffer.measureText(lines[i].concat(" ")).width;
         if (currentWidth > width) {
             width = currentWidth; 
         }
