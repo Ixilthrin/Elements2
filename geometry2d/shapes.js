@@ -154,7 +154,15 @@ function rectify(points, lineWidth) {
     return rectangle;
 }
 
-function smoothify(points, lineWidth) {
+function angleBetweenSuccessiveSegments(x1, y1, x2, y2, x3, y3)
+{
+    var lengthSeg1 = Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+    var lengthSeg2 = Math.sqrt((x3 - x2) * (x3 - x2) + (y3 - y2) * (y3 - y2));
+	var angle = Math.acos(((x2 - x1) * (x3 - x2) + (y2 - y1) * (y3 - y2)) / (lengthSeg1 * lengthSeg2));
+	return angle;
+}
+
+function smoothify(points, lineWidth) {	
     if (points.length < 4) {
         return;
     }
@@ -163,8 +171,17 @@ function smoothify(points, lineWidth) {
     p.push(points[0]);
     p.push(points[1]);
     for (var i = 2; i < points.length - 2; i += 2) {
-        p.push((points[i] + points[i + 2]) / 2);
-        p.push((points[i + 1] + points[i + 3]) / 2);
+		if (i < points.length - 3 
+		    && angleBetweenSuccessiveSegments(points[i - 2], points[i - 1], points[i], points[i + 1], points[i + 2], points[i + 3]) > .7)
+		{
+		    p.push(points[i]);
+			p.push(points[i + 1]);
+		}
+		else
+		{
+            p.push((points[i - 2] + points[i] + points[i + 2]) / 3);
+            p.push((points[i - 1] + points[i + 1] + points[i + 3]) / 3);
+		}
     }
     p.push(points[points.length - 2]);
     p.push(points[points.length - 1]);
