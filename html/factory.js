@@ -151,9 +151,9 @@ function addFontSizeChooser(parent, id)
   <option>10</option>\
   <option>12</option>\
   <option>14</option>\
-  <option>16</option>\
+  <option selected=\"selected\">16</option>\
   <option>18</option>\
-  <option selected=\"selected\">20</option>\
+  <option>20</option>\
   <option>22</option>\
   <option>24</option>\
   <option>26</option>\
