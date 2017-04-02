@@ -1412,9 +1412,6 @@ function modifyTextBoxWidth(box, increment)
     if (increment < 0 && box.maxWidth > textLength) {
         box.maxWidth = textLength;
     }
-    if (increment > 0 && box.maxWidth < textLength) {
-        box.maxWidth = textLength;
-    }
 }
 
 function modifyTextBoxFont(box, increment)
@@ -1565,7 +1562,7 @@ function main()
    }); 
    canvas.addEventListener('mousewheel', function(e) {
        e.preventDefault();
-	needsRedraw = true;
+	   needsRedraw = true;
        var centerX = document.body.scrollLeft + e.clientX - canvas.offsetLeft;
        var centerY = document.body.scrollTop + e.clientY - canvas.offsetTop;
        for (var i = 0; i < thePage.images.length; i++) {
@@ -1590,7 +1587,7 @@ function main()
                if (selectedIndices.length > 0 || segmentsSelectedIndices.length > 0) {
                    if (e.shiftKey) {
                        var box = thePage.boxes[selectedIndices[0]]
-                       var increment = (document.body.scrollLeft + e.clientX - canvas.offsetLeft - mouseX) / 2;
+                       var increment = (document.body.scrollLeft + e.clientX - canvas.offsetLeft - mouseX) / 10;
                        modifyTextBoxWidth(box, increment);
 					   dirtyTextBox(box);
                        return;
@@ -1912,7 +1909,7 @@ function main()
    document.addEventListener("keydown", function(e) {
        e.preventDefault();
 	   needsRedraw = true;
-	   
+	   canvas.focus();
 	   if (e.keyCode == 91) // Mac command key
 	       return;
 		   
@@ -2005,9 +2002,11 @@ function main()
    });
    
    document.addEventListener("keyup", function(e) {
+       e.preventDefault();
        var code = e.keyCode;
+	   canvas.focus();
 	   
-	needsRedraw = true;
+	   needsRedraw = true;
 	   if (e.keyCode == 91) // Mac command key
 	       return;
 		   
