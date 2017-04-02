@@ -20,8 +20,8 @@ function setupControls()
 	addChooser(div, "mode", modes, 0, function() { switchMode(); });
 	var lineModes = ["freestyle line mode", "straight line mode"];
 	addChooser(div, "linemode", lineModes, 0, function() { setLineMode(); });
-	var smoothModes = ["smooth draw", "raw draw"];
-	addChooser(div, "smoothmode", smoothModes, 0, function() { setSmoothMode(); });
+	var smoothModes = ["smooth draw", "smooth keep corners", "raw draw"];
+	addChooser(div, "smoothmode", smoothModes, 1, function() { setSmoothMode(); });
 	addBreak(div);
 	addButton(div, "red", "    ", function() { setColor("rgb(255, 0, 0)"); });
 	addButton(div, "green", "    ", function() { setColor("rgb(0, 102, 0)"); });

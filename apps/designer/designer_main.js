@@ -62,7 +62,7 @@ var needsRedraw = true;
 var addingProperty = false;
 
 var lineMode = "free"; // free or fixed
-var smoothMode = "smooth"; // smooth or raw
+var smoothMode = "smoothkeepcorners"; // smooth, smoothkeepcorners, or raw
 var lineOrientationTolerance = 5;
 var previousMouseX = 0;
 var previousMouseY = 0;
@@ -380,9 +380,13 @@ function setSmoothMode()
 		{
 		    smoothMode = "smooth";
 		}
-		else
+		else if (modeElement.value == "raw draw")
 		{
 		    smoothMode = "raw";
+		}
+		else
+		{
+		    smoothMode = "smoothkeepcorners";
 		}
 	}
 	canvas.focus();
@@ -579,7 +583,7 @@ function smoothify_command()
     for (var s = 0; s < 10; s++) {
         for (var i = 0; i < segmentsSelectedIndices.length; i++) {
             var segment = thePage.segments[segmentsSelectedIndices[i]];
-            segment.values = smoothify(segment.values);
+            segment.values = smoothify(segment.values, smoothMode == "smoothkeepcorners");
         }
     }
 }
@@ -1807,11 +1811,12 @@ function main()
            var curX = document.body.scrollLeft + e.clientX - canvas.offsetLeft;
            var curY = document.body.scrollTop + e.clientY - canvas.offsetTop;
            addPointToSegment(currentSegment, curX, curY);
-		   if (lineMode == "free" && smoothMode == "smooth")
+		   var keepCorners = smoothMode == "smoothkeepcorners";
+		   if (lineMode == "free" && (smoothMode == "smooth" || keepCorners))
 		   {
-		       currentSegment.values = adjustPointCount(currentSegment.values, 7);
+		       currentSegment.values = adjustPointCount(currentSegment.values, 5);
 		       for (var i = 0; i < 5; i = i + 1)
-		           currentSegment.values = smoothify(currentSegment.values);
+		           currentSegment.values = smoothify(currentSegment.values, keepCorners);
 		   }
        }
    });

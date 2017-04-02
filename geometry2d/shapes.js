@@ -162,7 +162,7 @@ function angleBetweenSuccessiveSegments(x1, y1, x2, y2, x3, y3)
 	return angle;
 }
 
-function smoothify(points, lineWidth) {	
+function smoothify(points, keepCorners) {
     if (points.length < 4) {
         return;
     }
@@ -171,7 +171,7 @@ function smoothify(points, lineWidth) {
     p.push(points[0]);
     p.push(points[1]);
     for (var i = 2; i < points.length - 2; i += 2) {
-		if (i < points.length - 3 
+		if (keepCorners && i < points.length - 3 
 		    && angleBetweenSuccessiveSegments(points[i - 2], points[i - 1], points[i], points[i + 1], points[i + 2], points[i + 3]) > .7)
 		{
 		    p.push(points[i]);
