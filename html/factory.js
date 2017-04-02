@@ -1,8 +1,8 @@
-function addCanvas(parent, width, height, id, tabindex)
+function addCanvas(parent, id, tabindex)
 {
     var element = document.createElement("canvas");
-	element.width = window.innerWidth;
-	element.height = window.innerHeight;
+	element.width = 2500;//window.innerWidth;
+	element.height = 2500;//window.innerHeight;
 	element.id = id;
 	element.tabindex = tabindex;
 	parent.appendChild(element);
@@ -90,14 +90,14 @@ function addBreak(parent)
 	parent.appendChild(document.createElement("br"));
 }
 
-function addChooser(parent, id, choices, defaultIndex, listener)
+function addChooser(parent, id, choices, selectedChoice, listener)
 {
     var element = document.createElement("select");
 	element.id = id;
 	for (var i = 0; i < choices.length; i = i + 1)
 	{
 	    var choice = document.createElement("option");
-		if (i == defaultIndex)
+		if (selectedChoice == choices[i])
 		{
 		    choice.selected = "\"selected\"";
 		}
@@ -107,7 +107,7 @@ function addChooser(parent, id, choices, defaultIndex, listener)
 	parent.appendChild(element);
     element.addEventListener("change", function(e) {
 	    listener();
-   });
+    });
 }
 
 function addFontchooser(parent, id)

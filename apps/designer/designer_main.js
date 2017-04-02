@@ -1,5 +1,6 @@
 // designer_main.js
 var dimension = 2;
+var hideControls = true;
 var viewManager;
 var canvas;
 var context;
@@ -41,7 +42,7 @@ var mouseY = startY;
 var minFontHeight = 8;
 var fontHeight = 16;
 var fontName = "Georgia";
-var fontType = ""; // Normal
+var fontType = "Normal"; // Normal, Bold, Italic
 var maxWidth = 0;
 var capsLock = false;
 var currentMaxWidth = maxWidth;
@@ -61,8 +62,8 @@ var needsRedraw = true;
 
 var addingProperty = false;
 
-var lineMode = "free"; // free or fixed
-var smoothMode = "smoothkeepcorners"; // smooth, smoothkeepcorners, or raw
+var lineMode = "freestyle line mode"; // freestyle line mode or straight line mode
+var smoothMode = "smooth keep corners"; // smooth draw, smooth keep corners, or raw draw
 var lineOrientationTolerance = 5;
 var previousMouseX = 0;
 var previousMouseY = 0;
@@ -359,14 +360,7 @@ function setLineMode()
     var modeElement = document.getElementById("linemode");
 	if (modeElement)
 	{
-	    if (modeElement.value == "freestyle line mode")
-		{
-		    lineMode = "free";
-		}
-		else
-		{
-		    lineMode = "fixed";
-		}
+	    lineMode = modeElement.value;
 	}
 	canvas.focus();
 }
@@ -376,18 +370,7 @@ function setSmoothMode()
     var modeElement = document.getElementById("smoothmode");
 	if (modeElement)
 	{
-	    if (modeElement.value == "smooth draw")
-		{
-		    smoothMode = "smooth";
-		}
-		else if (modeElement.value == "raw draw")
-		{
-		    smoothMode = "raw";
-		}
-		else
-		{
-		    smoothMode = "smoothkeepcorners";
-		}
+	    smoothMode = modeElement.value;
 	}
 	canvas.focus();
 }
@@ -400,8 +383,8 @@ function switchMode()
     if (modeElement) {
         inputMode = modeElement.value;
     }
-	canvas.focus();
 	setCursorForMode(inputMode);
+	canvas.focus();
 }
 
 function switchModeKeyCommand()
@@ -1501,410 +1484,10 @@ function main()
        viewManager = new View3d(); 
    particlesCreated = false;
    initTime = date.getTime();
+
+   setupFontChoosers();
+   setupCanvas();
    
-   var fontChooser = document.getElementById("fontchooser");
-   if (fontChooser != null)
-   {
-       fontChooser.addEventListener("change", function(e) {
-           fontName = fontChooser.options[fontChooser.selectedIndex].text;
-           for (var i = 0; i < selectedIndices.length; i++) {
-		       var currBox = thePage.boxes[selectedIndices[i]];
-               currBox.fontName = fontName;
-	           dirtyTextBox(currBox);
-           }
-       });
-   }
-   
-   var fontSizeChooser = document.getElementById("fontsize");
-   if (fontSizeChooser != null)
-   {
-       fontSizeChooser.addEventListener("change", function(e) {
-           fontHeight = Number(fontSizeChooser.options[fontSizeChooser.selectedIndex].text);
-           for (var i = 0; i < selectedIndices.length; i++) {
-		       var currBox = thePage.boxes[selectedIndices[i]];
-               currBox.fontHeight = fontHeight;
-	           dirtyTextBox(currBox);
-           }
-       });
-   }
-   
-   var fontTypeChooser = document.getElementById("fonttype");
-   
-   if (fontTypeChooser != null)
-   {
-       fontTypeChooser.addEventListener("change", function(e) {
-           fontType = fontTypeChooser.options[fontTypeChooser.selectedIndex].text;
-           if (fontType == "Normal") {
-               fontType = "";
-           }
-           for (var i = 0; i < selectedIndices.length; i++) {
-		       var currBox = thePage.boxes[selectedIndices[i]];
-               currBox.fontType = fontType;
-	           dirtyTextBox(currBox);
-           }
-       });
-   }
-
-   canvas = document.getElementById("canvas");
-   backCanvas = document.createElement('canvas');
-   backCanvas.width = canvas.width;
-   backCanvas.height = canvas.height;
-   backBuffer = backCanvas.getContext('2d');
-   canvas.tabindex = "1";
-   maxWidth = canvas.width;
-   
-   context = createContext(canvas);
-   initializeView(context);
-   
-   canvas.focus();
-   canvas.addEventListener('mouseover', function(e) {
-       canvas.focus();
-   }); 
-   canvas.addEventListener('mousewheel', function(e) {
-       e.preventDefault();
-	   needsRedraw = true;
-       var centerX = document.body.scrollLeft + e.clientX - canvas.offsetLeft;
-       var centerY = document.body.scrollTop + e.clientY - canvas.offsetTop;
-       for (var i = 0; i < thePage.images.length; i++) {
-           if (thePage.images[i].index != selectedIndices[0]) {
-               continue;
-           }
-           var factor = .9;
-           if (e.wheelDelta > 0) {
-               factor = 1.1;
-           }
-           thePage.imageWidths[i] *= factor;
-           thePage.imageHeights[i] *= factor;
-       }
-   }); 
-   
-   canvas.addEventListener("mousemove", function(e) {
-       e.preventDefault();
-	   needsRedraw = true;
-	   setCursorForMode(inputMode);
-       if (mouseIsDown) {
-           if (inputMode == "text") {
-               if (selectedIndices.length > 0 || segmentsSelectedIndices.length > 0) {
-                   if (e.shiftKey) {
-                       var box = thePage.boxes[selectedIndices[0]]
-                       var increment = (document.body.scrollLeft + e.clientX - canvas.offsetLeft - mouseX) / 10;
-                       modifyTextBoxWidth(box, increment);
-					   dirtyTextBox(box);
-                       return;
-                   }
-                   if (e.ctrlKey) {
-                       var box = thePage.boxes[selectedIndices[0]];
-                       var increment = document.body.scrollLeft + e.clientX - canvas.offsetLeft - mouseX;
-                       increment /= 40;
-                       modifyTextBoxFont(box, increment);
-					   dirtyTextBox(box);
-                       return;
-                   }
-                   e.target.style.cursor = "move";
-                   if (selectedIndices.length > 0) {
-                       previousX = thePage.boxes[selectedIndices[0]].x;
-                       previousY = thePage.boxes[selectedIndices[0]].y;
-                   }
-                   var date = new Date();
-                   previousTime = date.getTime();
-
-                   var changeX = document.body.scrollLeft + e.clientX - canvas.offsetLeft - selectOffsetX;
-                   var changeY = document.body.scrollTop + e.clientY - canvas.offsetTop - selectOffsetY;
-
-                   var groupName = "";
-                   var theGroupCount = 0;
-             
-                   if (selectedIndices.length > 0) {
-                       var textObject = thePage.boxes[selectedIndices[0]];
-                       var groupIndex = getGroupIndex(textObject);
-                       
-                       if (textObject.properties != undefined) {
-                           groupName = textObject.properties.values[groupIndex];
-                       }
-                   } else if (segmentsSelectedIndices.length > 0) {
-                       var segment = thePage.segments[segmentsSelectedIndices[0]];
-                       var groupIndex = getGroupIndex(segment);
-                       var properties = segment.properties;
-                       if (properties != undefined && properties.keys != undefined && properties.values != undefined) {
-                           if (groupName == "" && groupIndex >= 0) {
-                               groupName = segment.properties.values[groupIndex];
-                           }
-                       }
-                   }
-				   
-                   // Either move by group property or move by selection.
-                   // The rule is that if more than 1 object is selected,
-                   // then we don't move by the group property.
-                   if (selectedIndices.length + segmentsSelectedIndices.length > 1) {
-                       groupName = "";
-                   }
-
-                   var movedByGroup = false;
-
-                   if (groupName != "" && !e.shiftKey) {
-                       var exclusion = -1;
-                       var sBoxes = getBoxesByGroup(groupName, exclusion);
-                       for (var j = 0; j < sBoxes.length; j++) {
-                           movedByGroup = true;
-                           theGroupCount++;
-                           sBoxes[j].x += changeX;
-                           sBoxes[j].y += changeY;
-                       }
-                   }
-
-
-                   if (groupName != "" && !e.shiftKey) {
-                       var exclusion = -1;
-                       var currentSegments = getSegmentsByGroup(groupName, exclusion);
-                       for (j = 0; j < currentSegments.length; j++) {
-                           movedByGroup = true;
-                           theGroupCount++;
-                           var tSegment = currentSegments[j];
-                           var values = tSegment.values;
-                           tSegment.minX += changeX;
-                           tSegment.maxX += changeX;
-                           tSegment.minY += changeY;
-                           tSegment.maxY += changeY;
-                           for (var m = 0; m < values.length; m = m + 2) {
-                               values[m] += changeX;
-                               values[m + 1] += changeY;
-                           }
-                       }
-                   }
-
-                   if (!movedByGroup && theGroupCount < 2 && thePage.boxes.length > 0 && selectedIndices.length > 0) {
-                       for (var q = 0; q < selectedIndices.length; q++) {
-                           thePage.boxes[selectedIndices[q]].x += changeX;
-                           thePage.boxes[selectedIndices[q]].y += changeY;
-                       }
-                   }
-                   if (!movedByGroup && theGroupCount < 2) {
-                       for (var i = 0; i < segmentsSelectedIndices.length; i++) {
-                           var tSegment = thePage.segments[segmentsSelectedIndices[i]];
-                           tSegment.minX += changeX;
-                           tSegment.maxX += changeX;
-                           tSegment.minY += changeY;
-                           tSegment.maxY += changeY;
-                           var values = tSegment.values;
-                           for (var m = 0; m < values.length; m = m + 2) {
-                               values[m] += changeX;
-                               values[m + 1] += changeY;
-                           }
-                       }
-                   }
-
-                   selectOffsetX = document.body.scrollLeft + e.clientX - canvas.offsetLeft;
-                   selectOffsetY = document.body.scrollTop + e.clientY - canvas.offsetTop;
-
-                   return;
-               } else {
-                   selectionBoxFinalX = document.body.scrollLeft + e.clientX - canvas.offsetLeft;
-                   selectionBoxFinalY = document.body.scrollTop + e.clientY - canvas.offsetTop;
-               }
-           } else if (inputMode == "draw") {
-               var curX = document.body.scrollLeft + e.clientX - canvas.offsetLeft;
-               var curY = document.body.scrollTop + e.clientY - canvas.offsetTop;
-			   if (lineMode == "free")
-			   {
-                   addPointToSegment(currentSegment, curX, curY);
-			   }
-			   else
-			   {
-			       var numberOfPoints = currentSegment.values.length;
-				   var previousX = currentSegment.values[numberOfPoints - 2];
-				   var previousY = currentSegment.values[numberOfPoints - 1];
-				   var xDiff = Math.abs(curX - previousMouseX);
-				   var yDiff = Math.abs(curY - previousMouseY);
-				   
-				   if (xDiff < 2 && yDiff < 2)
-				       return;
-					   
-				   var horizontal = true;
-				   
-				   if (numberOfPoints == 2)
-				   {
-				   if (yDiff > xDiff)
-				       horizontal = false;
-				   }
-				   else
-				   {
-				   var previousPreviousX = currentSegment.values[numberOfPoints - 4];
-				   var previousPreviousY = currentSegment.values[numberOfPoints - 3];
-				   var previousXDiff = Math.abs(previousX - previousPreviousX);
-				   var previousYDiff = Math.abs(previousY - previousPreviousY);
-				   horizontal = previousXDiff > previousYDiff;
-				   
-				   if (horizontal && yDiff > xDiff + lineOrientationTolerance)
-				       horizontal = false;
-				   if (!horizontal && xDiff > yDiff + lineOrientationTolerance)
-				       horizontal = true;
-				   }
-				   
-				   if (horizontal)
-                       addPointToSegment(currentSegment, curX, previousY);
-				   else
-                       addPointToSegment(currentSegment, previousX, curY);
-					   
-				   previousMouseX = curX;
-				   previousMouseY = curY;
-			   }
-           } 
-           else if (inputMode == "points")
-           {
-               var changeX = document.body.scrollLeft + e.clientX - canvas.offsetLeft - selectOffsetX;
-               var changeY = document.body.scrollTop + e.clientY - canvas.offsetTop - selectOffsetY;
-
-               for (var selectedSegmentIndex = 0; selectedSegmentIndex < segmentsSelectedIndices.length; selectedSegmentIndex = selectedSegmentIndex + 1)
-               {
-                   var segmentIndex = segmentsSelectedIndices[selectedSegmentIndex];
-                   var segment = thePage.segments[segmentIndex];
-                   var indices = pointsSelectedIndices[segmentIndex];
-                   if (indices != null)
-                   {
-                       for (var selectIndex = 0; selectIndex < indices.length; selectIndex = selectIndex + 1)
-                       {
-                           var pointIndex = indices[selectIndex];
-
-                           var values = segment.values;
-
-                           values[pointIndex] = values[pointIndex] + changeX;
-                           values[pointIndex + 1] = values[pointIndex + 1] + changeY;
-                       }
-                   }
-
-               }
-               selectOffsetX = document.body.scrollLeft + e.clientX - canvas.offsetLeft;
-               selectOffsetY = document.body.scrollTop + e.clientY - canvas.offsetTop;
-           }
-       } else {
-           if (inputMode == "text") {
-               //outputColorValue(document.body.scrollLeft + e.clientX - canvas.offsetLeft, document.body.scrollTop + e.clientY - canvas.offsetTop);
-           }
-       }
-   });
-   
-   canvas.addEventListener("mouseup", function(e) {
-       mouseIsDown = false;
-	   needsRedraw = true;
-	   setCursorForMode(inputMode);
-       if (inputMode == "text") {
-           if (e.shiftKey) {
-               return;
-           }
-           if (selectedIndices.length > 0) {
-               previousTime = -1;
-           
-               previousX = -1;
-               previousY = -1;
-               return;
-		   } else {
-			   selectionBoxFinalX = document.body.scrollLeft + e.clientX - canvas.offsetLeft;
-			   selectionBoxFinalY = document.body.scrollTop + e.clientY - canvas.offsetTop;
-			   checkBoxIntersection();
-		   }
-       } else if (inputMode == "draw") {
-           currentSegment.color = lineColor;
-           currentSegment.width = lineWidth;
-           var curX = document.body.scrollLeft + e.clientX - canvas.offsetLeft;
-           var curY = document.body.scrollTop + e.clientY - canvas.offsetTop;
-           addPointToSegment(currentSegment, curX, curY);
-		   var keepCorners = smoothMode == "smoothkeepcorners";
-		   if (lineMode == "free" && (smoothMode == "smooth" || keepCorners))
-		   {
-		       currentSegment.values = adjustPointCount(currentSegment.values, 5);
-		       for (var i = 0; i < 5; i = i + 1)
-		           currentSegment.values = smoothify(currentSegment.values, keepCorners);
-		   }
-       }
-   });
-   
-   canvas.addEventListener("dblclick", function(e) {
-       if (inputMode == "text") {
-	       needsRedraw = true;
-           startX = document.body.scrollLeft + e.clientX - canvas.offsetLeft;
-           startY = document.body.scrollTop + e.clientY - canvas.offsetTop;
-           checkCursorIntersection(startX, startY, false);
-           if (selectedIndices.length > 0) {
-               var text = thePage.boxes[selectedIndices[0]].text;
-               if (text.substring(0,7) == "http://" || text.substring(0,8) == "file:///" || text.substring(0,8) == "https://")
-               {
-                   window.open(text);
-               } 
-               else
-               {
-                   copyToClipboard(text);
-               }
-           }
-       } 
-   });
-   
-   canvas.addEventListener("mousedown", function(e) {
-       e.preventDefault();
-       needsRedraw = true;
-       canvas.focus();
-       mouseIsDown = true;
-       firstClick = true;
-       mouseX = document.body.scrollLeft + e.clientX - canvas.offsetLeft;
-       mouseY = document.body.scrollTop + e.clientY - canvas.offsetTop;
-       selectOffsetX = document.body.scrollLeft + e.clientX - canvas.offsetLeft;
-       selectOffsetY = document.body.scrollTop + e.clientY - canvas.offsetTop;
-       var segmentsSelected = false;
-       var textSelected = false;
-       selectionBoxInitialX = -1;
-       selectionBoxInitialY = -1;
-       selectionBoxFinalX = -1;
-       selectionBoxFinalY = -1;
-       addCurrentText();
-	   textSelected = checkCursorIntersection(mouseX, mouseY, e.ctrlKey);
-       if (inputMode == "text") {
-           pointsSelectedIndices = [];
-           segmentsSelected = makeSegmentSelection(mouseX, mouseY, e.ctrlKey);
-           startX = document.body.scrollLeft + e.clientX - canvas.offsetLeft;
-           startY = document.body.scrollTop + e.clientY - canvas.offsetTop;
-           //textSelected = checkCursorIntersection(mouseX, mouseY, e.ctrlKey);
-           if (!textSelected && !segmentsSelected) {
-               selectedIndices = [];
-               segmentsSelectedIndices = [];
-               pointsSelectedIndices = [];
-           }
-           if (selectedIndices.length > 0) {
-               if (generatedDocument != null) {
-                   var text = thePage.boxes[selectedIndices[0]].text;
-                   generatedDocument += text;
-                   if (!titleSelected && text.charAt[text.length - 1] != ".") {
-                       generatedDocument += ".  ";
-                   }
-               }
-               //if (thePage.boxes[selectedIndices[0]].properties != undefined) {
-               //    showTableForBox();
-               //}
-               previousX = thePage.boxes[selectedIndices[0]].x;
-               previousY = thePage.boxes[selectedIndices[0]].y;
-           } else {
-               previousX = -1;
-               previousY = -1;
-               selectionBoxInitialX = startX;
-               selectionBoxInitialY = startY;
-           }
-       } else if (inputMode == "draw") {
-           currentSegment = createSegment(new Array(), -1, lineWidth, lineColor, [], []); 
-           if (selectedIndices.length > 0) {
-               currentSegment.parentIndex = selectedIndices[0];
-           } else {
-               currentSegment.parentIndex = -1;
-           }
-           thePage.segments.push(currentSegment);
-           var curX = document.body.scrollLeft + e.clientX - canvas.offsetLeft;
-           var curY = document.body.scrollTop + e.clientY - canvas.offsetTop;
-		   previousMouseX = curX;
-		   previousMouseY = curY;
-           addPointToSegment(currentSegment, curX, curY);
-       } else if (inputMode == "points")
-       {
-           if (!makeSegmentSelection(mouseX, mouseY, e.ctrlKey))
-               pointsSelectedIndices = [];
-       }
-   });
    
    document.addEventListener("keydown", function(e) {
        e.preventDefault();
@@ -2068,7 +1651,444 @@ function main()
 	//currentMaxWidth = 300;
 	//addCurrentText();
 	
+	var resizeCanvasSupported = false;
+	if (resizeCanvasSupported)
+	{
+	  window.addEventListener("resize", function(e) {
+	    setupControls(inputMode, lineMode, smoothMode, fontName, fontType, fontHeight, hideControls);
+		setupCanvas();
+		updatePage();
+		setLineMode();
+		setSmoothMode();
+		switchMode();
+	    setupFontChoosers();
+	  });
+	}
+	
 	draw();
+}
+
+function showHideControls()
+{
+    hideControls = !hideControls;
+	var button = document.getElementById("hidecontrols");
+	setupControls(inputMode, lineMode, smoothMode, fontName, fontType, fontHeight, hideControls);
+	setupCanvas();
+	updatePage();
+	setLineMode();
+    setSmoothMode();
+	switchMode();
+	setupFontChoosers();
+}
+
+function setupFontChoosers()
+{
+   var fontChooser = document.getElementById("fontchooser");
+   if (fontChooser != null)
+   {
+       fontChooser.addEventListener("change", function(e) {
+           fontName = fontChooser.options[fontChooser.selectedIndex].text;
+           for (var i = 0; i < selectedIndices.length; i++) {
+		       var currBox = thePage.boxes[selectedIndices[i]];
+               currBox.fontName = fontName;
+	           dirtyTextBox(currBox);
+           }
+       });
+   }
+   
+   var fontSizeChooser = document.getElementById("fontsize");
+   if (fontSizeChooser != null)
+   {
+       fontSizeChooser.addEventListener("change", function(e) {
+           fontHeight = Number(fontSizeChooser.options[fontSizeChooser.selectedIndex].text);
+           for (var i = 0; i < selectedIndices.length; i++) {
+		       var currBox = thePage.boxes[selectedIndices[i]];
+               currBox.fontHeight = fontHeight;
+	           dirtyTextBox(currBox);
+           }
+       });
+   }
+   
+   var fontTypeChooser = document.getElementById("fonttype");
+   
+   if (fontTypeChooser != null)
+   {
+       fontTypeChooser.addEventListener("change", function(e) {
+           fontType = fontTypeChooser.options[fontTypeChooser.selectedIndex].text;
+           if (fontType == "Normal") {
+               fontType = "";
+           }
+           for (var i = 0; i < selectedIndices.length; i++) {
+		       var currBox = thePage.boxes[selectedIndices[i]];
+               currBox.fontType = fontType;
+	           dirtyTextBox(currBox);
+           }
+       });
+   }
+}
+
+function setupCanvas()
+{
+   canvas = document.getElementById("canvas");
+   backCanvas = document.createElement('canvas');
+   backCanvas.width = canvas.width;
+   backCanvas.height = canvas.height;
+   backBuffer = backCanvas.getContext('2d');
+   canvas.tabindex = "1";
+   maxWidth = canvas.width;
+   
+   context = createContext(canvas);
+   initializeView(context);
+   
+   canvas.focus();
+   canvas.addEventListener('mouseover', function(e) {
+       canvas.focus();
+   }); 
+   canvas.addEventListener('mousewheel', function(e) {
+       e.preventDefault();
+	   needsRedraw = true;
+       var centerX = document.body.scrollLeft + e.clientX - canvas.offsetLeft;
+       var centerY = document.body.scrollTop + e.clientY - canvas.offsetTop;
+       for (var i = 0; i < thePage.images.length; i++) {
+           if (thePage.images[i].index != selectedIndices[0]) {
+               continue;
+           }
+           var factor = .9;
+           if (e.wheelDelta > 0) {
+               factor = 1.1;
+           }
+           thePage.imageWidths[i] *= factor;
+           thePage.imageHeights[i] *= factor;
+       }
+   }); 
+   
+   canvas.addEventListener("mousemove", function(e) {
+       e.preventDefault();
+	   needsRedraw = true;
+	   setCursorForMode(inputMode);
+       if (mouseIsDown) {
+           if (inputMode == "text") {
+               if (selectedIndices.length > 0 || segmentsSelectedIndices.length > 0) {
+                   if (e.shiftKey) {
+                       var box = thePage.boxes[selectedIndices[0]]
+                       var increment = (document.body.scrollLeft + e.clientX - canvas.offsetLeft - mouseX) / 10;
+                       modifyTextBoxWidth(box, increment);
+					   dirtyTextBox(box);
+                       return;
+                   }
+                   if (e.ctrlKey) {
+                       var box = thePage.boxes[selectedIndices[0]];
+                       var increment = document.body.scrollLeft + e.clientX - canvas.offsetLeft - mouseX;
+                       increment /= 40;
+                       modifyTextBoxFont(box, increment);
+					   dirtyTextBox(box);
+                       return;
+                   }
+                   e.target.style.cursor = "move";
+                   if (selectedIndices.length > 0) {
+                       previousX = thePage.boxes[selectedIndices[0]].x;
+                       previousY = thePage.boxes[selectedIndices[0]].y;
+                   }
+                   var date = new Date();
+                   previousTime = date.getTime();
+
+                   var changeX = document.body.scrollLeft + e.clientX - canvas.offsetLeft - selectOffsetX;
+                   var changeY = document.body.scrollTop + e.clientY - canvas.offsetTop - selectOffsetY;
+
+                   var groupName = "";
+                   var theGroupCount = 0;
+             
+                   if (selectedIndices.length > 0) {
+                       var textObject = thePage.boxes[selectedIndices[0]];
+                       var groupIndex = getGroupIndex(textObject);
+                       
+                       if (textObject.properties != undefined) {
+                           groupName = textObject.properties.values[groupIndex];
+                       }
+                   } else if (segmentsSelectedIndices.length > 0) {
+                       var segment = thePage.segments[segmentsSelectedIndices[0]];
+                       var groupIndex = getGroupIndex(segment);
+                       var properties = segment.properties;
+                       if (properties != undefined && properties.keys != undefined && properties.values != undefined) {
+                           if (groupName == "" && groupIndex >= 0) {
+                               groupName = segment.properties.values[groupIndex];
+                           }
+                       }
+                   }
+				   
+                   // Either move by group property or move by selection.
+                   // The rule is that if more than 1 object is selected,
+                   // then we don't move by the group property.
+                   if (selectedIndices.length + segmentsSelectedIndices.length > 1) {
+                       groupName = "";
+                   }
+
+                   var movedByGroup = false;
+
+                   if (groupName != "" && !e.shiftKey) {
+                       var exclusion = -1;
+                       var sBoxes = getBoxesByGroup(groupName, exclusion);
+                       for (var j = 0; j < sBoxes.length; j++) {
+                           movedByGroup = true;
+                           theGroupCount++;
+                           sBoxes[j].x += changeX;
+                           sBoxes[j].y += changeY;
+                       }
+                   }
+
+
+                   if (groupName != "" && !e.shiftKey) {
+                       var exclusion = -1;
+                       var currentSegments = getSegmentsByGroup(groupName, exclusion);
+                       for (j = 0; j < currentSegments.length; j++) {
+                           movedByGroup = true;
+                           theGroupCount++;
+                           var tSegment = currentSegments[j];
+                           var values = tSegment.values;
+                           tSegment.minX += changeX;
+                           tSegment.maxX += changeX;
+                           tSegment.minY += changeY;
+                           tSegment.maxY += changeY;
+                           for (var m = 0; m < values.length; m = m + 2) {
+                               values[m] += changeX;
+                               values[m + 1] += changeY;
+                           }
+                       }
+                   }
+
+                   if (!movedByGroup && theGroupCount < 2 && thePage.boxes.length > 0 && selectedIndices.length > 0) {
+                       for (var q = 0; q < selectedIndices.length; q++) {
+                           thePage.boxes[selectedIndices[q]].x += changeX;
+                           thePage.boxes[selectedIndices[q]].y += changeY;
+                       }
+                   }
+                   if (!movedByGroup && theGroupCount < 2) {
+                       for (var i = 0; i < segmentsSelectedIndices.length; i++) {
+                           var tSegment = thePage.segments[segmentsSelectedIndices[i]];
+                           tSegment.minX += changeX;
+                           tSegment.maxX += changeX;
+                           tSegment.minY += changeY;
+                           tSegment.maxY += changeY;
+                           var values = tSegment.values;
+                           for (var m = 0; m < values.length; m = m + 2) {
+                               values[m] += changeX;
+                               values[m + 1] += changeY;
+                           }
+                       }
+                   }
+
+                   selectOffsetX = document.body.scrollLeft + e.clientX - canvas.offsetLeft;
+                   selectOffsetY = document.body.scrollTop + e.clientY - canvas.offsetTop;
+
+                   return;
+               } else {
+                   selectionBoxFinalX = document.body.scrollLeft + e.clientX - canvas.offsetLeft;
+                   selectionBoxFinalY = document.body.scrollTop + e.clientY - canvas.offsetTop;
+               }
+           } else if (inputMode == "draw") {
+               var curX = document.body.scrollLeft + e.clientX - canvas.offsetLeft;
+               var curY = document.body.scrollTop + e.clientY - canvas.offsetTop;
+			   if (lineMode == "freestyle line mode")
+			   {
+                   addPointToSegment(currentSegment, curX, curY);
+			   }
+			   else
+			   {
+			       var numberOfPoints = currentSegment.values.length;
+				   var previousX = currentSegment.values[numberOfPoints - 2];
+				   var previousY = currentSegment.values[numberOfPoints - 1];
+				   var xDiff = Math.abs(curX - previousMouseX);
+				   var yDiff = Math.abs(curY - previousMouseY);
+				   
+				   if (xDiff < 2 && yDiff < 2)
+				       return;
+					   
+				   var horizontal = true;
+				   
+				   if (numberOfPoints == 2)
+				   {
+				   if (yDiff > xDiff)
+				       horizontal = false;
+				   }
+				   else
+				   {
+				   var previousPreviousX = currentSegment.values[numberOfPoints - 4];
+				   var previousPreviousY = currentSegment.values[numberOfPoints - 3];
+				   var previousXDiff = Math.abs(previousX - previousPreviousX);
+				   var previousYDiff = Math.abs(previousY - previousPreviousY);
+				   horizontal = previousXDiff > previousYDiff;
+				   
+				   if (horizontal && yDiff > xDiff + lineOrientationTolerance)
+				       horizontal = false;
+				   if (!horizontal && xDiff > yDiff + lineOrientationTolerance)
+				       horizontal = true;
+				   }
+				   
+				   if (horizontal)
+                       addPointToSegment(currentSegment, curX, previousY);
+				   else
+                       addPointToSegment(currentSegment, previousX, curY);
+					   
+				   previousMouseX = curX;
+				   previousMouseY = curY;
+			   }
+           } 
+           else if (inputMode == "points")
+           {
+               var changeX = document.body.scrollLeft + e.clientX - canvas.offsetLeft - selectOffsetX;
+               var changeY = document.body.scrollTop + e.clientY - canvas.offsetTop - selectOffsetY;
+
+               for (var selectedSegmentIndex = 0; selectedSegmentIndex < segmentsSelectedIndices.length; selectedSegmentIndex = selectedSegmentIndex + 1)
+               {
+                   var segmentIndex = segmentsSelectedIndices[selectedSegmentIndex];
+                   var segment = thePage.segments[segmentIndex];
+                   var indices = pointsSelectedIndices[segmentIndex];
+                   if (indices != null)
+                   {
+                       for (var selectIndex = 0; selectIndex < indices.length; selectIndex = selectIndex + 1)
+                       {
+                           var pointIndex = indices[selectIndex];
+
+                           var values = segment.values;
+
+                           values[pointIndex] = values[pointIndex] + changeX;
+                           values[pointIndex + 1] = values[pointIndex + 1] + changeY;
+                       }
+                   }
+
+               }
+               selectOffsetX = document.body.scrollLeft + e.clientX - canvas.offsetLeft;
+               selectOffsetY = document.body.scrollTop + e.clientY - canvas.offsetTop;
+           }
+       } else {
+           if (inputMode == "text") {
+               //outputColorValue(document.body.scrollLeft + e.clientX - canvas.offsetLeft, document.body.scrollTop + e.clientY - canvas.offsetTop);
+           }
+       }
+   });
+   
+   canvas.addEventListener("mouseup", function(e) {
+       mouseIsDown = false;
+	   needsRedraw = true;
+	   setCursorForMode(inputMode);
+       if (inputMode == "text") {
+           if (e.shiftKey) {
+               return;
+           }
+           if (selectedIndices.length > 0) {
+               previousTime = -1;
+           
+               previousX = -1;
+               previousY = -1;
+               return;
+		   } else {
+			   selectionBoxFinalX = document.body.scrollLeft + e.clientX - canvas.offsetLeft;
+			   selectionBoxFinalY = document.body.scrollTop + e.clientY - canvas.offsetTop;
+			   checkBoxIntersection();
+		   }
+       } else if (inputMode == "draw") {
+           currentSegment.color = lineColor;
+           currentSegment.width = lineWidth;
+           var curX = document.body.scrollLeft + e.clientX - canvas.offsetLeft;
+           var curY = document.body.scrollTop + e.clientY - canvas.offsetTop;
+           addPointToSegment(currentSegment, curX, curY);
+		   var keepCorners = smoothMode == "smooth keep corners";
+		   if (lineMode == "freestyle line mode" && (smoothMode == "smooth draw" || keepCorners))
+		   {
+		       currentSegment.values = adjustPointCount(currentSegment.values, 5);
+		       for (var i = 0; i < 5; i = i + 1)
+		           currentSegment.values = smoothify(currentSegment.values, keepCorners);
+		   }
+       }
+   });
+   
+   canvas.addEventListener("dblclick", function(e) {
+       if (inputMode == "text") {
+	       needsRedraw = true;
+           startX = document.body.scrollLeft + e.clientX - canvas.offsetLeft;
+           startY = document.body.scrollTop + e.clientY - canvas.offsetTop;
+           checkCursorIntersection(startX, startY, false);
+           if (selectedIndices.length > 0) {
+               var text = thePage.boxes[selectedIndices[0]].text;
+               if (text.substring(0,7) == "http://" || text.substring(0,8) == "file:///" || text.substring(0,8) == "https://")
+               {
+                   window.open(text);
+               } 
+               else
+               {
+                   copyToClipboard(text);
+               }
+           }
+       } 
+   });
+   
+   canvas.addEventListener("mousedown", function(e) {
+       e.preventDefault();
+       needsRedraw = true;
+       canvas.focus();
+       mouseIsDown = true;
+       firstClick = true;
+       mouseX = document.body.scrollLeft + e.clientX - canvas.offsetLeft;
+       mouseY = document.body.scrollTop + e.clientY - canvas.offsetTop;
+       selectOffsetX = document.body.scrollLeft + e.clientX - canvas.offsetLeft;
+       selectOffsetY = document.body.scrollTop + e.clientY - canvas.offsetTop;
+       var segmentsSelected = false;
+       var textSelected = false;
+       selectionBoxInitialX = -1;
+       selectionBoxInitialY = -1;
+       selectionBoxFinalX = -1;
+       selectionBoxFinalY = -1;
+       addCurrentText();
+	   textSelected = checkCursorIntersection(mouseX, mouseY, e.ctrlKey);
+       if (inputMode == "text") {
+           pointsSelectedIndices = [];
+           segmentsSelected = makeSegmentSelection(mouseX, mouseY, e.ctrlKey);
+           startX = document.body.scrollLeft + e.clientX - canvas.offsetLeft;
+           startY = document.body.scrollTop + e.clientY - canvas.offsetTop;
+           //textSelected = checkCursorIntersection(mouseX, mouseY, e.ctrlKey);
+           if (!textSelected && !segmentsSelected) {
+               selectedIndices = [];
+               segmentsSelectedIndices = [];
+               pointsSelectedIndices = [];
+           }
+           if (selectedIndices.length > 0) {
+               if (generatedDocument != null) {
+                   var text = thePage.boxes[selectedIndices[0]].text;
+                   generatedDocument += text;
+                   if (!titleSelected && text.charAt[text.length - 1] != ".") {
+                       generatedDocument += ".  ";
+                   }
+               }
+               //if (thePage.boxes[selectedIndices[0]].properties != undefined) {
+               //    showTableForBox();
+               //}
+               previousX = thePage.boxes[selectedIndices[0]].x;
+               previousY = thePage.boxes[selectedIndices[0]].y;
+           } else {
+               previousX = -1;
+               previousY = -1;
+               selectionBoxInitialX = startX;
+               selectionBoxInitialY = startY;
+           }
+       } else if (inputMode == "draw") {
+           currentSegment = createSegment(new Array(), -1, lineWidth, lineColor, [], []); 
+           if (selectedIndices.length > 0) {
+               currentSegment.parentIndex = selectedIndices[0];
+           } else {
+               currentSegment.parentIndex = -1;
+           }
+           thePage.segments.push(currentSegment);
+           var curX = document.body.scrollLeft + e.clientX - canvas.offsetLeft;
+           var curY = document.body.scrollTop + e.clientY - canvas.offsetTop;
+		   previousMouseX = curX;
+		   previousMouseY = curY;
+           addPointToSegment(currentSegment, curX, curY);
+       } else if (inputMode == "points")
+       {
+           if (!makeSegmentSelection(mouseX, mouseY, e.ctrlKey))
+               pointsSelectedIndices = [];
+       }
+   });
 }
 
 var date = new Date();

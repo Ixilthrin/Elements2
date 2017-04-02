@@ -2,18 +2,24 @@ function run()
 {
     debug("running designer");
 	
-	setupControls();
+	setupControls("text", "freestyle line mode", "smooth keep corners", "Georgia", "Normal", "16", true);
 	
 	main();
 }
 
-function setupControls()
+function setupControls(inputMode, lineMode, smoothMode, currentFont, 
+                       currentFontType, currentFontSize, hideControls)
 {
 	var body = document.getElementsByTagName("body").item(0);
 	var div = document.getElementsByTagName("div").item(0);
-	addCanvas(body, "1000", "540", "canvas", "1");
-	addBreak(body);
-	
+	var canvas = document.getElementById("canvas");
+	if (canvas != null)
+	    body.removeChild(canvas);
+	while (div.hasChildNodes()) {
+        div.removeChild(div.lastChild);
+    }
+		
+	addCanvas(body, "canvas", "1");
 	addLabel(div, "pagenumber");
 	var arrowButtonWidth = 16;
 	var arrowButtonHeight = 12;
@@ -21,7 +27,7 @@ function setupControls()
 	addIconButton(arrowButtonWidth, arrowButtonHeight, div, "", "Next Page", function() { nextPage(); }, "nextpage2.jpg");
 	addLabel(div, "editmode");
 	var modes = ["text", "draw", "points"];
-	addChooser(div, "mode", modes, 0, function() { switchMode(); });
+	addChooser(div, "mode", modes, inputMode, function() { switchMode(); });
 	addButton(div, "red", "      ", function() { setColor("rgb(255, 0, 0)"); });
 	addButton(div, "green", "      ", function() { setColor("rgb(0, 102, 0)"); });
 	addButton(div, "blue", "      ", function() { setColor("rgb(0, 0, 255)"); });
@@ -30,19 +36,32 @@ function setupControls()
 	addButton(div, "black", "      ", function() { setColor("black"); });
 	addButton(div, "orange", "      ", function() { setColor("rgb(255, 140, 0)"); });
 	addButton(div, "purple", "      ", function() { setColor("rgb(148, 0, 211)"); });
-	addBreak(div);
+	var hideSymbol = "+";
+	if (!hideControls)
+	    hideSymbol = "-";
+	addButton(div, "hidecontrols", hideSymbol, function() { showHideControls(); });
 	
-	addLabel(div, "linestyles");
-	var lineModes = ["freestyle line mode", "straight line mode"];
-	addChooser(div, "linemode", lineModes, 0, function() { setLineMode(); });
-	var smoothModes = ["smooth draw", "smooth keep corners", "raw draw"];
-	addChooser(div, "smoothmode", smoothModes, 1, function() { setSmoothMode(); });
+	if (hideControls)
+	    return;
+		
 	addBreak(div);
 	
 	addLabel(div, "textstyles");
-	addFontchooser(div, "fontchooser");
-	addFonttype(div, "fonttype");
-	addFontSizeChooser(div, "fontsize");
+	var fonts = ["Arial", "Calibri", "Comic Sans Ms", "Courier", "Cursive", "Fantasy",
+	             "Geneva", "Georgia", "Helvetica", "Impact", "Lucida Console",
+				 "Monaco", "Times New Roman", "Verdana"];
+	addChooser(div, "fontchooser", fonts, currentFont, function() {  });
+	var fontStyles = [ "Normal", "Bold", "Italic" ];
+	addChooser(div, "fonttype", fontStyles, currentFontType, function() { });
+	var fontSizes = [ "10", "12", "14", "16", "18", "20", "22", "24", "26", "28", "30", "32" ];
+	addChooser(div, "fontsize", fontSizes, currentFontSize, function() { });
+	
+	addLabel(div, "linestyles");
+	var lineModes = ["freestyle line mode", "straight line mode"];
+	addChooser(div, "linemode", lineModes, lineMode, function() { setLineMode(); });
+	var smoothModes = ["smooth draw", "smooth keep corners", "raw draw"];
+	addChooser(div, "smoothmode", smoothModes, smoothMode, function() { setSmoothMode(); });
+	
 	addBreak(div);
 	
 	var iconButtonWidth = 18;
