@@ -1,8 +1,8 @@
 function addCanvas(parent, width, height, id, tabindex)
 {
     var element = document.createElement("canvas");
-	element.width = width;
-	element.height = height;
+	element.width = window.innerWidth;
+	element.height = window.innerHeight;
 	element.id = id;
 	element.tabindex = tabindex;
 	parent.appendChild(element);
@@ -20,7 +20,7 @@ function addButton(parent, id, value, onclick)
 	parent.appendChild(element);
 }
 
-function addIconButton(parent, id, value, onclick, image)
+function addIconButton(width, height, parent, id, value, onclick, image)
 {
     var element = document.createElement("button");
 	element.class = "button";
@@ -30,8 +30,8 @@ function addIconButton(parent, id, value, onclick, image)
 	element.onclick = onclick;
 	//element.innerHTML = "<img width=20 height=20 src=\"" + image + "\">";
 	var imgElement = document.createElement('img');
-	imgElement.height = 20;
-	imgElement.width = 20;
+	imgElement.width = width;
+	imgElement.height = height;
 	//imgElement.src = image;
 	element.appendChild(imgElement);
 	
