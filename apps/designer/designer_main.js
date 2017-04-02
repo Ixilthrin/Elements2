@@ -2432,6 +2432,21 @@ function updatePage()
     if (pageNumber) {
         pageNumber.innerHTML = "Page " + (pageIndex + 1) + " / " + pages.length;
     }
+	var linestyles = document.getElementById("linestyles");
+	if (linestyles)
+	{
+	    linestyles.innerHTML = "Line styles:";
+	}
+	var textstyles = document.getElementById("textstyles");
+	if (textstyles)
+	{
+	    textstyles.innerHTML = "Text styles:";
+	}
+	var editmode = document.getElementById("editmode");
+	if (editmode)
+	{
+	    editmode.innerHTML = "Edit mode:";
+	}
 	canvas.focus();
 }
 
