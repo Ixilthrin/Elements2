@@ -14,6 +14,7 @@ function editText(inputText, e, capsLock)
 		   if (text.length > 0) {
 			   text = text.slice(0, text.length - 1)
 		   }
+		   break;
 	   case 9:
 		   text += "    ";
 		   break;
