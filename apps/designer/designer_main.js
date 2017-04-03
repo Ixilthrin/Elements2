@@ -2454,7 +2454,7 @@ function updatePage()
 	var linestyles = document.getElementById("linestyles");
 	if (linestyles)
 	{
-	    linestyles.innerHTML = "Line styles:";
+	    linestyles.innerHTML = "Draw styles:";
 	}
 	var textstyles = document.getElementById("textstyles");
 	if (textstyles)
