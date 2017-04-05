@@ -1473,6 +1473,8 @@ function setupView()
    initializeView(context);
 }
 
+var commandKeyIsDown = false;
+
 function main() 
 {
    if (dimension == 2)
@@ -1491,12 +1493,15 @@ function main()
 	   needsRedraw = true;
 	   canvas.focus();
 	   if (e.keyCode == 91) // Mac command key
+	   {
+	       commandKeyIsDown = true;
 	       return;
+       }
 		   
        if (inputMode != "text")
 	       return;
 		   
-       if (e.ctrlKey) {
+       if (e.ctrlKey || commandKeyIsDown) {
            if (e.keyCode == 67) {  // 'C' key
                copySelection();
                return;
@@ -1588,9 +1593,12 @@ function main()
 	   
 	   needsRedraw = true;
 	   if (e.keyCode == 91) // Mac command key
+	   {
+	       commandKeyIsDown = false;
 	       return;
+       }
 		   
-       if (code == 27) {
+       if (code == 27) { // Escape
            switchModeKeyCommand();
            return;
        }
@@ -1761,7 +1769,7 @@ function setupCanvas()
 					   dirtyTextBox(box);
                        return;
                    }
-                   if (e.ctrlKey) {
+                   if (e.ctrlKey || commandKeyIsDown) {
                        var box = thePage.boxes[selectedIndices[0]];
                        var increment = document.body.scrollLeft + e.clientX - canvas.offsetLeft - mouseX;
                        increment /= 40;
@@ -2024,13 +2032,12 @@ function setupCanvas()
        selectionBoxFinalX = -1;
        selectionBoxFinalY = -1;
        addCurrentText();
-	   textSelected = checkCursorIntersection(mouseX, mouseY, e.ctrlKey);
+	   textSelected = checkCursorIntersection(mouseX, mouseY, (e.ctrlKey || commandKeyIsDown));
        if (inputMode == "text") {
            pointsSelectedIndices = [];
-           segmentsSelected = makeSegmentSelection(mouseX, mouseY, e.ctrlKey);
+           segmentsSelected = makeSegmentSelection(mouseX, mouseY, (e.ctrlKey || commandKeyIsDown));
            startX = document.body.scrollLeft + e.clientX - canvas.offsetLeft;
            startY = document.body.scrollTop + e.clientY - canvas.offsetTop;
-           //textSelected = checkCursorIntersection(mouseX, mouseY, e.ctrlKey);
            if (!textSelected && !segmentsSelected) {
                selectedIndices = [];
                segmentsSelectedIndices = [];
@@ -2070,7 +2077,7 @@ function setupCanvas()
            addPointToSegment(currentSegment, curX, curY);
        } else if (inputMode == "points")
        {
-           if (!makeSegmentSelection(mouseX, mouseY, e.ctrlKey))
+           if (!makeSegmentSelection(mouseX, mouseY, (e.ctrlKey || commandKeyIsDown)))
                pointsSelectedIndices = [];
        }
    });
