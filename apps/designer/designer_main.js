@@ -62,7 +62,7 @@ var needsRedraw = true;
 
 var addingProperty = false;
 
-var lineMode = "freestyle line mode"; // freestyle or orthogonal
+var lineMode = "freestyle"; // freestyle or orthogonal
 var smoothMode = "smooth keep corners"; // smooth, smooth keep corners, or raw
 var lineOrientationTolerance = 5;
 var previousMouseX = 0;
