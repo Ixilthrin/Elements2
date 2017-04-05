@@ -57,9 +57,9 @@ function setupControls(inputMode, lineMode, smoothMode, currentFont,
 	addChooser(div, "fontsize", fontSizes, currentFontSize, function() { });
 	
 	addLabel(div, "linestyles");
-	var lineModes = ["freestyle line mode", "straight line mode"];
+	var lineModes = ["freestyle", "orthogonal"];
 	addChooser(div, "linemode", lineModes, lineMode, function() { setLineMode(); });
-	var smoothModes = ["smooth draw", "smooth keep corners", "raw draw"];
+	var smoothModes = ["smooth", "smooth keep corners", "raw"];
 	addChooser(div, "smoothmode", smoothModes, smoothMode, function() { setSmoothMode(); });
 	
 	addBreak(div);

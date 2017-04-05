@@ -40,7 +40,7 @@ var selectionBoxFinalY = -1;
 var mouseX = startX;
 var mouseY = startY;
 var minFontHeight = 8;
-var fontHeight = 16;
+var fontHeight = 18;
 var fontName = "Georgia";
 var fontType = "Normal"; // Normal, Bold, Italic
 var maxWidth = 0;
@@ -62,8 +62,8 @@ var needsRedraw = true;
 
 var addingProperty = false;
 
-var lineMode = "freestyle line mode"; // freestyle line mode or straight line mode
-var smoothMode = "smooth keep corners"; // smooth draw, smooth keep corners, or raw draw
+var lineMode = "freestyle line mode"; // freestyle or orthogonal
+var smoothMode = "smooth keep corners"; // smooth, smooth keep corners, or raw
 var lineOrientationTolerance = 5;
 var previousMouseX = 0;
 var previousMouseY = 0;
@@ -1888,7 +1888,7 @@ function setupCanvas()
            } else if (inputMode == "draw") {
                var curX = document.body.scrollLeft + e.clientX - canvas.offsetLeft;
                var curY = document.body.scrollTop + e.clientY - canvas.offsetTop;
-			   if (lineMode == "freestyle line mode")
+			   if (lineMode == "freestyle")
 			   {
                    addPointToSegment(currentSegment, curX, curY);
 			   }
@@ -1993,7 +1993,7 @@ function setupCanvas()
            var curY = document.body.scrollTop + e.clientY - canvas.offsetTop;
            addPointToSegment(currentSegment, curX, curY);
 		   var keepCorners = smoothMode == "smooth keep corners";
-		   if (lineMode == "freestyle line mode" && (smoothMode == "smooth draw" || keepCorners))
+		   if (lineMode == "freestyle" && (smoothMode == "smooth" || keepCorners))
 		   {
 		       currentSegment.values = adjustPointCount(currentSegment.values, 5);
 		       for (var i = 0; i < 5; i = i + 1)

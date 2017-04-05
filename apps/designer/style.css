@@ -16,7 +16,8 @@ select {
 	background: #3b8edd;
     font-family: "Comic Sans MS";
 	font-weight: 900;
-    border-radius: 3px;  
+    border-radius: 5px;  
+    padding: 0 7px;
     //-webkit-appearance: none;
     //-webkit-border-radius: 0px;
     //-moz-appearance: none;
@@ -45,9 +46,11 @@ button {
 }
 
 label {
+    font-family: "Comic Sans MS";
+	font-weight: 900;
     background: #bbbbbb;
     border-radius: 3px;
-	font-weight: bold;
+	//font-weight: bold;
     padding: 0 7px;
 }
 
