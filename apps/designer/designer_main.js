@@ -31,8 +31,8 @@ var selectOffsetY = -1;
 var inputMode = "text";
 var mouseIsDown = false;
 var lineColor = "blue"
-var lineWidth = 2;
-var currentSegment = createSegment(new Array(), -1, lineWidth, lineColor, [], []); 
+var lineThickness = 3;
+var currentSegment = createSegment(new Array(), -1, lineThickness, lineColor, [], []); 
 var selectionBoxInitialX = -1;
 var selectionBoxInitialY = -1;
 var selectionBoxFinalX = -1;
@@ -1609,7 +1609,7 @@ function main()
 		   }
 		   
            if (code >= 49 && code <= 57) {
-               lineWidth = code - 48;
+               lineThickness = code - 48;
                return;
            }
            if (code == 71) {
@@ -1988,7 +1988,7 @@ function setupCanvas()
 		   }
        } else if (inputMode == "draw") {
            currentSegment.color = lineColor;
-           currentSegment.width = lineWidth;
+           currentSegment.width = lineThickness;
            var curX = document.body.scrollLeft + e.clientX - canvas.offsetLeft;
            var curY = document.body.scrollTop + e.clientY - canvas.offsetTop;
            addPointToSegment(currentSegment, curX, curY);
@@ -2071,7 +2071,7 @@ function setupCanvas()
                selectionBoxInitialY = startY;
            }
        } else if (inputMode == "draw") {
-           currentSegment = createSegment(new Array(), -1, lineWidth, lineColor, [], []); 
+           currentSegment = createSegment(new Array(), -1, lineThickness, lineColor, [], []); 
            if (selectedIndices.length > 0) {
                currentSegment.parentIndex = selectedIndices[0];
            } else {

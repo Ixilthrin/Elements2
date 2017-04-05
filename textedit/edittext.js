@@ -59,6 +59,13 @@ function editText(inputText, e, capsLock)
 			   text += "=";
 		   }
            break;
+	   case 186:
+		   if (e.shiftKey) {
+			   text += ":";
+		   } else {
+			   text += ";";
+		   }
+		   break;
 	   case 187:
 		   if (e.shiftKey) {
 			   text += "+";
