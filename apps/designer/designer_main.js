@@ -127,7 +127,7 @@ function draw()
         newObject.fontName = fontName;
         newObject.fontType = fontType;
         newObject.textColor = lineColor;
-        newObject.maxWidth = canvas.width - startX - 10;
+        newObject.maxWidth = getViewWidth() - startX - 10;
         if (newObject.maxWidth < 0) {
             newObject.maxWidth = 0;
         }
@@ -142,6 +142,11 @@ function draw()
     }
 	
 	viewManager.drawScene(context);
+}
+
+function getViewWidth()
+{
+    return Math.min(canvas.width, window.innerWidth)
 }
 
 function drawTextInBox(box, xPos, yPos, isSelected, imageIndex)
@@ -1166,15 +1171,7 @@ var frustum = new Frustum();
 
 // Returns true if something was selected.
 function checkCursorIntersection(x, y, add)
-{
-/*
-    var front = frustum.convertScreenToWorld(x, y, canvas.width, canvas.height);
-    var back = frustum.convertScreenToBackPlane(x, y, canvas.width, canvas.height);
-	var point = [0, 0, 0, 0];
-    var dist = frustum.distanceFromSegmentToPoint(front, back, point);
-	alert("dist = " + dist)
-	*/
-	
+{	
     var somethingSelected = false;
     for (var i = 0; i < thePage.boxes.length; ++i) {
         var textBoxWidth = thePage.boxes[i].width;
@@ -1570,7 +1567,7 @@ function main()
        } else if (code == 13) {
 	       // ENTER key pressed, move to next line
            addCurrentText();
-           startY += fontHeight + 4;
+           startY += fontHeight + fontHeight / 5;
        } else if (code == 46) {
            deleteSelection();
        } else {
@@ -1638,18 +1635,6 @@ function main()
     pageIndex = 0;
     thePage = pages[pageIndex];    
     updatePage();
-	
-	//text = "Kyle";
-	//startX = 200;
-	//startY = 200;
-	//currentMaxWidth = 400;
-	//addCurrentText();
-	
-	//text = "Evan";
-	//startX = 900;
-	//startY = 500;
-	//currentMaxWidth = 300;
-	//addCurrentText();
 	
 	var resizeCanvasSupported = false;
 	if (resizeCanvasSupported)
@@ -1735,7 +1720,7 @@ function setupCanvas()
    backCanvas.height = canvas.height;
    backBuffer = backCanvas.getContext('2d');
    canvas.tabindex = "1";
-   maxWidth = canvas.width;
+   maxWidth = getViewWidth();
    
    context = createContext(canvas);
    initializeView(context);
@@ -2449,7 +2434,7 @@ function updatePage()
 	needsRedraw = true;
     var pageNumber = document.getElementById("pagenumber");
     if (pageNumber) {
-        pageNumber.innerHTML = "Page " + (pageIndex + 1) + " / " + pages.length;
+        pageNumber.innerHTML = "Page " + (pageIndex + 1) + " of " + pages.length;
     }
 	var linestyles = document.getElementById("linestyles");
 	if (linestyles)
@@ -2472,7 +2457,7 @@ function updatePage()
 function runCode()
 { 
 	needsRedraw = true;
-    if (true/*confirm("Clear everything and import new content?")*/) 
+    if (confirm("Clear everything and import new content?")) 
     {
         addCurrentText();
         var code = document.getElementById("code");
@@ -2615,7 +2600,7 @@ function checkDistance(range, x1, y1, x2, y2)
 function clearAll()
 {
 	needsRedraw = true;
-    if (true/*confirm("Clear everything?")*/) {
+    if (confirm("Do you wish to clear all content and pages?")) {
         pages = new Array();
         thePage = createPage();
         pages.push(thePage);
