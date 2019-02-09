@@ -2,7 +2,6 @@
 // Global sub-systems
 var Graphics;
 
-var needsRedraw = true;
 var x = 5;
 var y = 50;
 
@@ -11,8 +10,8 @@ function draw()
 {
     requestAnimationFrame(draw);
 	
-	if (needsRedraw)
-	    needsRedraw = false;
+	if (Graphics.needsRedraw)
+	    Graphics.needsRedraw = false;
 	else
 	    return;
 	
@@ -21,7 +20,7 @@ function draw()
 	if (x <= 50)
 	{
 	    x++;
-	    needsRedraw = true;
+	    Graphics.needsRedraw = true;
 	}
 }
 
@@ -53,7 +52,7 @@ function main()
    
    document.addEventListener("keydown", function(e) {
        e.preventDefault();
-	   needsRedraw = true;
+	   Graphics.needsRedraw = true;
 	   canvas.focus();
 	   if (e.keyCode == 91) // Mac command key
 	   {
@@ -135,7 +134,7 @@ function setupCanvas()
    }); 
    canvas.addEventListener('mousewheel', function(e) {
        e.preventDefault();
-	   needsRedraw = true;
+	   Graphics.needsRedraw = true;
        var centerX = document.body.scrollLeft + e.clientX - canvas.offsetLeft;
        var centerY = document.body.scrollTop + e.clientY - canvas.offsetTop;
        if (e.wheelDelta > 0) {
@@ -144,7 +143,7 @@ function setupCanvas()
    
    canvas.addEventListener("mousemove", function(e) {
        e.preventDefault();
-	   needsRedraw = true;
+	   Graphics.needsRedraw = true;
        if (e.shiftKey) {
 	   }
        if (e.ctrlKey) {
@@ -162,7 +161,7 @@ function setupCanvas()
    
    canvas.addEventListener("mousedown", function(e) {
        e.preventDefault();
-       needsRedraw = true;
+       Graphics.needsRedraw = true;
        canvas.focus();
        let mouseX = document.body.scrollLeft + e.clientX - canvas.offsetLeft;
        let mouseY = document.body.scrollTop + e.clientY - canvas.offsetTop;
