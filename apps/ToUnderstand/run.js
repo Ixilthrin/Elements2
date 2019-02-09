@@ -5,8 +5,7 @@ function run()
 	main();
 }
 
-function setupControls(inputMode, lineMode, smoothMode, currentFont, 
-                       currentFontType, currentFontSize, hideControls)
+function setupControls()
 {
 	var body = document.getElementsByTagName("body").item(0);
 	var div = document.getElementsByTagName("div").item(0);
