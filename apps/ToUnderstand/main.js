@@ -10,18 +10,18 @@ function draw()
 {
     requestAnimationFrame(draw);
 	
-	if (Graphics.needsRedraw)
-	    Graphics.needsRedraw = false;
-	else
-	    return;
+    if (Graphics.needsRedraw)
+        Graphics.needsRedraw = false;
+    else
+        return;
 	
-	Graphics.view.clearScreen();
-	drawScene(Graphics);
-	if (x <= 50)
-	{
-	    x++;
-	    Graphics.needsRedraw = true;
-	}
+    Graphics.view.clearScreen();
+    drawScene(Graphics);
+    if (x <= 50)
+    {
+        x++;
+        Graphics.needsRedraw = true;
+    }
 }
 
 var commands = [];
@@ -33,10 +33,10 @@ commands.push((Graphics) => drawDefaultText(Graphics.context, "Synchronization C
 commands.push((Graphics) => drawDefaultText(Graphics.context, "Thread Scheduler", x, y+100));
 function drawScene(Graphics)
 {
-	for (var i = 0; i < commands.length; i++)
-	{
-		commands[i](Graphics);
-	}
+    for (var i = 0; i < commands.length; i++)
+    {
+        commands[i](Graphics);
+    }
 }
 
 function updateScene(Graphics)
@@ -125,70 +125,70 @@ function main()
 
 function setupCanvas()
 {
-   var canvas = Graphics.canvas;
-   canvas.tabindex = "1";
+    var canvas = Graphics.canvas;
+    canvas.tabindex = "1";
    
-   canvas.focus();
-   canvas.addEventListener('mouseover', function(e) {
-       canvas.focus();
-   }); 
-   canvas.addEventListener('mousewheel', function(e) {
-       e.preventDefault();
-	   Graphics.needsRedraw = true;
-       var centerX = document.body.scrollLeft + e.clientX - canvas.offsetLeft;
-       var centerY = document.body.scrollTop + e.clientY - canvas.offsetTop;
-       if (e.wheelDelta > 0) {
-       }
-   }); 
+    canvas.focus();
+    canvas.addEventListener('mouseover', function(e) {
+        canvas.focus();
+    }); 
+    canvas.addEventListener('mousewheel', function(e) {
+        e.preventDefault();
+	    Graphics.needsRedraw = true;
+        var centerX = document.body.scrollLeft + e.clientX - canvas.offsetLeft;
+        var centerY = document.body.scrollTop + e.clientY - canvas.offsetTop;
+        if (e.wheelDelta > 0) {
+        }
+    }); 
    
-   canvas.addEventListener("mousemove", function(e) {
-       e.preventDefault();
-	   Graphics.needsRedraw = true;
-       if (e.shiftKey) {
-	   }
-       if (e.ctrlKey) {
-	   }
-   });
+    canvas.addEventListener("mousemove", function(e) {
+        e.preventDefault();
+	    Graphics.needsRedraw = true;
+        if (e.shiftKey) {
+	    }
+        if (e.ctrlKey) {
+        }
+    });
    
-   canvas.addEventListener("mouseup", function(e) {
-       if (e.shiftKey) {
-           return;
-       }
-   });
+    canvas.addEventListener("mouseup", function(e) {
+        if (e.shiftKey) {
+            return;
+        }
+    });
    
-   canvas.addEventListener("dblclick", function(e) {
-   });
+    canvas.addEventListener("dblclick", function(e) {
+    });
    
-   canvas.addEventListener("mousedown", function(e) {
-       e.preventDefault();
-       Graphics.needsRedraw = true;
-       canvas.focus();
-       let mouseX = document.body.scrollLeft + e.clientX - canvas.offsetLeft;
-       let mouseY = document.body.scrollTop + e.clientY - canvas.offsetTop;
-   });
+    canvas.addEventListener("mousedown", function(e) {
+        e.preventDefault();
+        Graphics.needsRedraw = true;
+        canvas.focus();
+        let mouseX = document.body.scrollLeft + e.clientX - canvas.offsetLeft;
+        let mouseY = document.body.scrollTop + e.clientY - canvas.offsetTop;
+    });
 }
 
 function drawOutlinedText(context, text, x, y, insideColor, outsideColor, pt, fontName)
 {
-	context.font = pt + 'pt ' + fontName;
-	context.strokeStyle = outsideColor;
-	context.fillStyle = insideColor;
-	context.fillText(text, x, y);
-	context.strokeText(text, x, y);
+    context.font = pt + 'pt ' + fontName;
+    context.strokeStyle = outsideColor;
+    context.fillStyle = insideColor;
+    context.fillText(text, x, y);
+    context.strokeText(text, x, y);
 }
 
 function drawDefaultText(context, text, x, y)
 {
-	drawOutlinedText(context, text, x, y, 'black','black',12,'Arial');
+    drawOutlinedText(context, text, x, y, 'black','black',12,'Arial');
 }
 
 function drawHeader1Text(context, text, x, y)
 {
-	drawOutlinedText(context, text, x, y, 'cornflowerblue','black',16,'Arial');
+    drawOutlinedText(context, text, x, y, 'cornflowerblue','black',16,'Arial');
 }
 
 function drawHeader5Text(context, text, x, y)
 {
-	drawOutlinedText(context, text, x, y, 'cornflowerblue','black',38,'Arial');
+    drawOutlinedText(context, text, x, y, 'cornflowerblue','black',38,'Arial');
 }
 
