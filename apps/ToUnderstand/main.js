@@ -1,4 +1,7 @@
 // main.js for the ToUnderstand project
+// Global sub-systems
+var Graphics;
+
 
 var hideControls = true;
 var viewManager; // Required
@@ -70,6 +73,8 @@ var previousMouseY = 0;
 
 var x = 5;
 var y = 50;
+
+// This is an active canvas due to this loop with continuous updating
 function draw() 
 {
     requestAnimationFrame(draw);
@@ -79,29 +84,27 @@ function draw()
 	else
 	    return;
 	
-    viewManager.eraseView(context);
-	drawScene(context);
+	Graphics.view.clearScreen();
+	drawScene(Graphics);
 	if (x <= 50)
 	{
 	    x++;
 	    needsRedraw = true;
 	}
-	
-	//viewManager.drawScene(context);
 }
 
 var commands = [];
-commands.push(() => drawHeader5Text(context, "Understanding Async Await", x, y));
+commands.push((Graphics) => drawHeader5Text(Graphics.context, "Understanding Async Await", x, y));
 
-commands.push(() => drawHeader1Text(context, "Some key terms:", x, y+30));
-commands.push(() => drawDefaultText(context, "Task", x, y+60));
-commands.push(() => drawDefaultText(context, "Synchronization Context", x, y+80));
-commands.push(() => drawDefaultText(context, "Thread Scheduler", x, y+100));
-function drawScene(context)
+commands.push((Graphics) => drawHeader1Text(Graphics.context, "Some key terms:", x, y+30));
+commands.push((Graphics) => drawDefaultText(Graphics.context, "Task", x, y+60));
+commands.push((Graphics) => drawDefaultText(Graphics.context, "Synchronization Context", x, y+80));
+commands.push((Graphics) => drawDefaultText(Graphics.context, "Thread Scheduler", x, y+100));
+function drawScene(Graphics)
 {
 	for (var i = 0; i < commands.length; i++)
 	{
-		commands[i]();
+		commands[i](Graphics);
 	}
 }
 
@@ -1467,12 +1470,14 @@ var commandKeyIsDown = false;
 
 function main() 
 {
-   viewManager = new View2d();
+	Graphics = GraphicsSystem(document.getElementById("canvas"), new View2d());
+	Graphics.initialize();
+    viewManager = new View2d();
 	   
-   particlesCreated = false;
-   initTime = date.getTime();
+    particlesCreated = false;
+    initTime = date.getTime();
 
-   setupCanvas();
+    setupCanvas();
    
    
    document.addEventListener("keydown", function(e) {

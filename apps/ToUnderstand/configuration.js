@@ -11,8 +11,8 @@ scripts.push("../../geometry2d/shapes.js?v=1");
 scripts.push("../../geometry2d/polyline.js?v=1");
 scripts.push("../../textedit/edittext.js?v=1");
 scripts.push("run.js?v=1");
-scripts.push("../designer/view2d.js?v=1");  // TODO: remove or place in common code area
-scripts.push("../designer/view3d.js?v=1");  // TODO: remove or place in common code area
+scripts.push("view2d.js?v=1"); 
+scripts.push("GraphicsSystem.js?v=1");
 scripts.push("main.js?v=1");
 
 var debugging = false;
