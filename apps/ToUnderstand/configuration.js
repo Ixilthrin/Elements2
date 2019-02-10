@@ -13,6 +13,7 @@ scripts.push("../../textedit/edittext.js?v=1");
 scripts.push("run.js?v=1");
 scripts.push("view2d.js?v=1"); 
 scripts.push("GraphicsSystem.js?v=1");
+scripts.push("UserInputSystem.js?v=1)");
 scripts.push("main.js?v=1");
 
 var debugging = false;
