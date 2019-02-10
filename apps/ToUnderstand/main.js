@@ -2,6 +2,7 @@
 // Global sub-systems
 var Graphics;
 var UserInput;
+var TextDrawing;
 
 var x = 5;
 var y = 50;
@@ -26,12 +27,12 @@ function draw()
 }
 
 var commands = [];
-commands.push((Graphics) => drawHeader5Text(Graphics.context, "Understanding Async Await", x, y));
+commands.push((Graphics) => TextDrawing.drawHeader5Text(Graphics.context, "Understanding Async Await", x, y));
 
-commands.push((Graphics) => drawHeader1Text(Graphics.context, "Some key terms:", x, y+30));
-commands.push((Graphics) => drawDefaultText(Graphics.context, "Task", x, y+60));
-commands.push((Graphics) => drawDefaultText(Graphics.context, "Synchronization Context", x, y+80));
-commands.push((Graphics) => drawDefaultText(Graphics.context, "Thread Scheduler", x, y+100));
+commands.push((Graphics) => TextDrawing.drawHeader1Text(Graphics.context, "Some key terms:", x, y+30));
+commands.push((Graphics) => TextDrawing.drawDefaultText(Graphics.context, "Task", x, y+60));
+commands.push((Graphics) => TextDrawing.drawDefaultText(Graphics.context, "Synchronization Context", x, y+80));
+commands.push((Graphics) => TextDrawing.drawDefaultText(Graphics.context, "Thread Scheduler", x, y+100));
 function drawScene(Graphics)
 {
     for (var i = 0; i < commands.length; i++)
@@ -52,31 +53,7 @@ function main()
 	Graphics.initialize();
     UserInput = UserInputSystem(document, Graphics.canvas);
     UserInput.initialize();
-    
+    TextDrawing = TextDrawingUtil();
     draw();
-}
-
-function drawOutlinedText(context, text, x, y, insideColor, outsideColor, pt, fontName)
-{
-    context.font = pt + 'pt ' + fontName;
-    context.strokeStyle = outsideColor;
-    context.fillStyle = insideColor;
-    context.fillText(text, x, y);
-    context.strokeText(text, x, y);
-}
-
-function drawDefaultText(context, text, x, y)
-{
-    drawOutlinedText(context, text, x, y, 'black','black',12,'Arial');
-}
-
-function drawHeader1Text(context, text, x, y)
-{
-    drawOutlinedText(context, text, x, y, 'cornflowerblue','black',16,'Arial');
-}
-
-function drawHeader5Text(context, text, x, y)
-{
-    drawOutlinedText(context, text, x, y, 'cornflowerblue','black',38,'Arial');
 }
 
