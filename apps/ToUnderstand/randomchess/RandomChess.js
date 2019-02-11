@@ -14,6 +14,43 @@ var ChessSquare = function() {
     return that;
 }
 
+var PawnMoves = function() {
+    let that = {
+        GetPotentialMoves: function(chessboard, currentIndex, color) {
+            var indices = [];
+            if (color == "white") {
+                //check single move
+                let tempIndex = currentIndex - 8;
+                //alert(chessboard[tempIndex].ChessPiece);
+                if (tempIndex >= 0 && chessboard[tempIndex].ChessPiece == null) {
+                    indices.push(tempIndex);
+                    
+                    //check double move
+                    tempIndex = currentIndex - 16;
+                    if (tempIndex >= 0 && chessboard[tempIndex].ChessPiece == null) {
+                        indices.push(tempIndex);
+                    }
+                }
+            } else if (color == "black") {
+                //check single move
+                let tempIndex = currentIndex + 8;
+                //alert(chessboard[tempIndex].ChessPiece);
+                if (tempIndex < 64 && chessboard[tempIndex].ChessPiece == null) {
+                    indices.push(tempIndex);
+                    
+                    //check double move
+                    tempIndex = currentIndex + 16;
+                    if (tempIndex < 64 && chessboard[tempIndex].ChessPiece == null) {
+                        indices.push(tempIndex);
+                    }
+                }
+            }
+            return indices;
+        }
+    }
+    return that;
+}
+
 var RandomChess = function(graphics, textDrawing) {
     let that = {
         Graphics: graphics,
@@ -98,6 +135,35 @@ var RandomChess = function(graphics, textDrawing) {
             }
         },
         update: function() {
+            var index = 0;
+            index = 48 + Math.floor(Math.random() * 1000) % 8;
+            var chessPiece = that.ChessBoard[index].ChessPiece;
+            if (chessPiece == null)
+                return;
+            var moves = PawnMoves();
+            var potentialMoves = moves.GetPotentialMoves(that.ChessBoard, index, "white");
+            if (potentialMoves.length > 0)
+            {
+                let localIndex = Math.floor(Math.random() * potentialMoves.length);
+                var nextMove = potentialMoves[localIndex];
+                that.ChessBoard[nextMove].ChessPiece = chessPiece;
+                that.ChessBoard[index].ChessPiece = null;
+            }
+            
+            
+            index = 8 + Math.floor(Math.random() * 1000) % 8;
+            var chessPiece = that.ChessBoard[index].ChessPiece;
+            if (chessPiece == null)
+                return;
+            var moves = PawnMoves();
+            var potentialMoves = moves.GetPotentialMoves(that.ChessBoard, index, "black");
+            if (potentialMoves.length > 0)
+            {
+                let localIndex = Math.floor(Math.random() * potentialMoves.length);
+                var nextMove = potentialMoves[localIndex];
+                that.ChessBoard[nextMove].ChessPiece = chessPiece;
+                that.ChessBoard[index].ChessPiece = null;
+            }
         }
     }
     return that;

@@ -14,8 +14,8 @@ function draw()
         return;
 	
     Graphics.view.clearScreen();
-    SceneController.update();
     SceneController.draw();
+    SceneController.update();
 }
 
 function main() 
