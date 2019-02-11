@@ -15,6 +15,7 @@ scripts.push("view2d.js?v=1");
 scripts.push("GraphicsSystem.js?v=1");
 scripts.push("UserInputSystem.js?v=1)");
 scripts.push("TextDrawingUtil.js?v=1");
+scripts.push("asyncawait/AsyncAwaitLecture.js?v=1");
 scripts.push("main.js?v=1");
 
 var debugging = false;

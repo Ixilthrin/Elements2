@@ -5,7 +5,7 @@ var GraphicsSystem = function(canvas, view) {
         view: view,
         context: null,
         initialize: function () {
-            that.context = view.createContext(canvas);
+            that.context = that.view.createContext(canvas);
         }
     }
     return that;
