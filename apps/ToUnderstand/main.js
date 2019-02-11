@@ -26,7 +26,10 @@ function main()
     UserInput = UserInputSystem(document, Graphics.canvas);
     UserInput.initialize();
     TextDrawing = TextDrawingUtil();
-    SceneController = AsyncAwaitLecture(Graphics, TextDrawing);
+    
+    //SceneController = AsyncAwaitLecture(Graphics, TextDrawing);
+    SceneController = RandomChess(Graphics, TextDrawing);
+    
     SceneController.initialize();
     draw();
 }
