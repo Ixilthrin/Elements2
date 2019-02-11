@@ -1,7 +1,7 @@
 var TextDrawingUtil = function() {
     let that = {
         drawOutlinedText: function (context, text, x, y, outsideColor, insideColor, pt, fontName) {
-            context.font = pt + 'pt ' + fontName;
+            context.font = pt + 'pt ' + fontName + " bold";
             context.strokeStyle = outsideColor;
             context.fillStyle = insideColor;
             context.fillText(text, x, y);
