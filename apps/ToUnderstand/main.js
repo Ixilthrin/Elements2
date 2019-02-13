@@ -8,10 +8,10 @@ var SceneController;
 function draw() 
 {
     requestAnimationFrame(draw);
-    if (Graphics.needsRedraw)
-        Graphics.needsRedraw = false;
-    else
-        return;
+    //if (Graphics.needsRedraw)
+    //    Graphics.needsRedraw = false;
+    //else
+    //    return;
 	
     Graphics.view.clearScreen();
     SceneController.draw();
