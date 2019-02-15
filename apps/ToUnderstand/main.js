@@ -13,7 +13,6 @@ function draw()
     //else
     //    return;
 	
-    Graphics.view.clearScreen();
     SceneController.draw();
     SceneController.update();
 }
