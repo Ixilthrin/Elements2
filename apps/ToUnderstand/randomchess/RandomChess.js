@@ -20,7 +20,7 @@ var KnightMoves = function() {
     let that = {
         GetPotentialMoves: function(chessboard, currentIndex, color) {
             var indices = [];
-            // up-right
+            // up 2- right 1
             var tempIndex = currentIndex;
             if (currentIndex % 8 < 7)
             {
@@ -28,7 +28,15 @@ var KnightMoves = function() {
                 if (tempIndex >= 0 && (chessboard[tempIndex].ChessPiece == null || chessboard[tempIndex].ChessPiece.Color != color))
                     indices.push(tempIndex);
             }
-            // down-right
+            // up 1- right 2
+            var tempIndex = currentIndex;
+            if (currentIndex % 8 < 6)
+            {
+                tempIndex = currentIndex - 6;
+                if (tempIndex >= 0 && (chessboard[tempIndex].ChessPiece == null || chessboard[tempIndex].ChessPiece.Color != color))
+                    indices.push(tempIndex);
+            }
+            // down 2 -right 1
             var tempIndex = currentIndex;
             if (currentIndex % 8 < 7)
             {
@@ -36,7 +44,15 @@ var KnightMoves = function() {
                 if (tempIndex < 64 && (chessboard[tempIndex].ChessPiece == null || chessboard[tempIndex].ChessPiece.Color != color))
                     indices.push(tempIndex);
             }
-            // down-left
+            // down 1 -right 2
+            var tempIndex = currentIndex;
+            if (currentIndex % 8 < 6)
+            {
+                tempIndex = currentIndex + 10;
+                if (tempIndex < 64 && (chessboard[tempIndex].ChessPiece == null || chessboard[tempIndex].ChessPiece.Color != color))
+                    indices.push(tempIndex);
+            }
+            // down 2 - left 1
             var tempIndex = currentIndex;
             if (currentIndex % 8 > 0)
             {
@@ -44,11 +60,27 @@ var KnightMoves = function() {
                 if (tempIndex < 64 && (chessboard[tempIndex].ChessPiece == null || chessboard[tempIndex].ChessPiece.Color != color))
                     indices.push(tempIndex);
             }
-            // up-left
+            // down 1 - left 2
+            var tempIndex = currentIndex;
+            if (currentIndex % 8 > 1)
+            {
+                tempIndex = currentIndex + 6;
+                if (tempIndex < 64 && (chessboard[tempIndex].ChessPiece == null || chessboard[tempIndex].ChessPiece.Color != color))
+                    indices.push(tempIndex);
+            }
+            // up 2 -left 1
             var tempIndex = currentIndex;
             if (currentIndex % 8 > 0)
             {
-                tempIndex = currentIndex - 15;
+                tempIndex = currentIndex - 17;
+                if (tempIndex >= 0 && (chessboard[tempIndex].ChessPiece == null || chessboard[tempIndex].ChessPiece.Color != color))
+                    indices.push(tempIndex);
+            }
+            // up 1 -left 2
+            var tempIndex = currentIndex;
+            if (currentIndex % 8 > 1)
+            {
+                tempIndex = currentIndex - 10;
                 if (tempIndex >= 0 && (chessboard[tempIndex].ChessPiece == null || chessboard[tempIndex].ChessPiece.Color != color))
                     indices.push(tempIndex);
             }
@@ -424,7 +456,7 @@ var RandomChess = function(graphics, textDrawing) {
         },
         update: function() {
             that.FrameCount = that.FrameCount + 1;
-            if (that.FrameCount < 25)
+            if (that.FrameCount < 100)
             {
                 return;
             }
