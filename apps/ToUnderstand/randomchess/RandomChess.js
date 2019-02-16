@@ -365,6 +365,23 @@ var PawnMoves = function() {
     return that;
 }
 
+var PieceTransition = function(chessPiece, oldPosition, newPosition)
+{
+    let that = {
+        ChessPiece: chessPiece,
+        OldPosition: oldPosition,
+        NewPosition: newPosition,
+        Progress: 0,
+        UpdateProgress: function() {
+            that.Progress = that.Progress + .05;
+            if (that.Progress > 1)
+                that.IsComplete = true;
+        },
+        IsComplete: false
+    }
+    return that;
+}
+
 var RandomChess = function(graphics, textDrawing) {
     let that = {
         Graphics: graphics,
@@ -375,6 +392,7 @@ var RandomChess = function(graphics, textDrawing) {
         BlackPieces: [],
         NextTurn: "white",
         FrameCount: 0,
+        Transition: null,
         initialize: function() {
             var newImage = new Image();
             newImage.src = "randomchess/chessboard.jpg";
@@ -432,6 +450,14 @@ var RandomChess = function(graphics, textDrawing) {
             }
             that.TextDrawing.drawHeader5Text(that.Graphics.context, "Random Chess", 100, 50);
             
+            if (that.Transition != null && that.Transition.Progress > 1)
+            {
+                that.ChessBoard[that.Transition.OldPosition].ChessPiece = null;
+                that.ChessBoard[that.Transition.NewPosition].ChessPiece = that.Transition.ChessPiece;
+                that.Transition.ChessPiece.Index = that.Transition.NewPosition;
+                that.Transition = null;
+            }
+            
             for (var i = 0; i < 64; ++i)
             {
                 let x = 112 + (i % 8) * 62.5;
@@ -439,6 +465,12 @@ var RandomChess = function(graphics, textDrawing) {
                 let chessPiece = that.ChessBoard[i].ChessPiece;
                 if (chessPiece == null)
                     continue;
+                
+                if (that.Transition != null) {
+                    if (that.Transition.OldPosition == i)
+                        continue;
+                }
+                
                 let color = "gold";
                 if (chessPiece.Color == "white")
                     color = "silver";
@@ -453,10 +485,42 @@ var RandomChess = function(graphics, textDrawing) {
                     'Arial'
                 );
             }
+            
+            if (that.Transition != null) {
+                let initialX = 112 + (that.Transition.OldPosition % 8) * 62.5;
+                let initialY = 150 + Math.floor(that.Transition.OldPosition / 8) * 62.5;
+                let finalX = 112 + (that.Transition.NewPosition % 8) * 62.5;
+                let finalY = 150 + Math.floor(that.Transition.NewPosition / 8) * 62.5;
+                
+                let diffX = finalX - initialX;
+                let diffY = finalY - initialY;
+                
+                let currentX = initialX + that.Transition.Progress * diffX;
+                let currentY = initialY + that.Transition.Progress * diffY;
+                
+                let color = "gold";
+                if (that.Transition.ChessPiece.Color == "white")
+                    color = "silver";
+                that.TextDrawing.drawOutlinedText(
+                    that.Graphics.context, 
+                    that.Transition.ChessPiece.Symbol, 
+                    currentX, 
+                    currentY,
+                    color,
+                    color,
+                    38,
+                    'Arial'
+                );
+                
+                that.Transition.UpdateProgress();
+            }
         },
         update: function() {
+            if (that.Transition != null)
+                return;
+            
             that.FrameCount = that.FrameCount + 1;
-            if (that.FrameCount < 100)
+            if (that.FrameCount < 25)
             {
                 return;
             }
@@ -539,9 +603,7 @@ var RandomChess = function(graphics, textDrawing) {
                     currentPiece.Index = -1;
                 }
                 
-                that.ChessBoard[theMove].ChessPiece = chessPiece;
-                that.ChessBoard[oldIndex].ChessPiece = null;
-                chessPiece.Index = theMove;
+                that.Transition = PieceTransition(chessPiece, oldIndex, theMove);
                 if (that.NextTurn == "white")
                     that.NextTurn = "black";
                 else
