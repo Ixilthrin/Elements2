@@ -1,9 +1,10 @@
-var ChessPiece = function(color, kind, symbol, index) {
+var ChessPiece = function(color, kind, symbol, value, index) {
     let that = {
         Color: color,
         Kind: kind,
         Symbol: symbol,
         Active: true,
+        Value: value,
         Index: index
     }
     return that;
@@ -407,39 +408,39 @@ var RandomChess = function(graphics, textDrawing) {
                 that.ChessBoard.push(square);
             }
             
-            that.BlackPieces.push(that.ChessBoard[0].ChessPiece = ChessPiece("black", "rook", "R", 0));
-            that.BlackPieces.push(that.ChessBoard[1].ChessPiece = ChessPiece("black", "knight", "N", 1));
-            that.BlackPieces.push(that.ChessBoard[2].ChessPiece = ChessPiece("black", "bishop", "B", 2));
-            that.BlackPieces.push(that.ChessBoard[3].ChessPiece = ChessPiece("black", "queen", "Q", 3));
-            that.BlackPieces.push(that.ChessBoard[4].ChessPiece = ChessPiece("black", "king", "K", 4));
-            that.BlackPieces.push(that.ChessBoard[5].ChessPiece = ChessPiece("black", "bishop", "B", 5));
-            that.BlackPieces.push(that.ChessBoard[6].ChessPiece = ChessPiece("black", "knight", "N", 6));
-            that.BlackPieces.push(that.ChessBoard[7].ChessPiece = ChessPiece("black", "rook", "R", 7));
-            that.BlackPieces.push(that.ChessBoard[8].ChessPiece = ChessPiece("black", "pawn", "P", 8));
-            that.BlackPieces.push(that.ChessBoard[9].ChessPiece = ChessPiece("black", "pawn", "P", 9));
-            that.BlackPieces.push(that.ChessBoard[10].ChessPiece = ChessPiece("black", "pawn", "P", 10));
-            that.BlackPieces.push(that.ChessBoard[11].ChessPiece = ChessPiece("black", "pawn", "P", 11));
-            that.BlackPieces.push(that.ChessBoard[12].ChessPiece = ChessPiece("black", "pawn", "P", 12));
-            that.BlackPieces.push(that.ChessBoard[13].ChessPiece = ChessPiece("black", "pawn", "P", 13));
-            that.BlackPieces.push(that.ChessBoard[14].ChessPiece = ChessPiece("black", "pawn", "P", 14));
-            that.BlackPieces.push(that.ChessBoard[15].ChessPiece = ChessPiece("black", "pawn", "P", 15));
+            that.BlackPieces.push(that.ChessBoard[0].ChessPiece = ChessPiece("black", "rook", "R", 6, 0));
+            that.BlackPieces.push(that.ChessBoard[1].ChessPiece = ChessPiece("black", "knight", "N", 5, 1));
+            that.BlackPieces.push(that.ChessBoard[2].ChessPiece = ChessPiece("black", "bishop", "B", 5, 2));
+            that.BlackPieces.push(that.ChessBoard[3].ChessPiece = ChessPiece("black", "queen", "Q", 8, 3));
+            that.BlackPieces.push(that.ChessBoard[4].ChessPiece = ChessPiece("black", "king", "K", 20, 4));
+            that.BlackPieces.push(that.ChessBoard[5].ChessPiece = ChessPiece("black", "bishop", "B", 5, 5));
+            that.BlackPieces.push(that.ChessBoard[6].ChessPiece = ChessPiece("black", "knight", "N", 5, 6));
+            that.BlackPieces.push(that.ChessBoard[7].ChessPiece = ChessPiece("black", "rook", "R", 6, 7));
+            that.BlackPieces.push(that.ChessBoard[8].ChessPiece = ChessPiece("black", "pawn", "P", 1, 8));
+            that.BlackPieces.push(that.ChessBoard[9].ChessPiece = ChessPiece("black", "pawn", "P", 1, 9));
+            that.BlackPieces.push(that.ChessBoard[10].ChessPiece = ChessPiece("black", "pawn", "P", 1, 10));
+            that.BlackPieces.push(that.ChessBoard[11].ChessPiece = ChessPiece("black", "pawn", "P", 1, 11));
+            that.BlackPieces.push(that.ChessBoard[12].ChessPiece = ChessPiece("black", "pawn", "P", 1, 12));
+            that.BlackPieces.push(that.ChessBoard[13].ChessPiece = ChessPiece("black", "pawn", "P", 1, 13));
+            that.BlackPieces.push(that.ChessBoard[14].ChessPiece = ChessPiece("black", "pawn", "P", 1, 14));
+            that.BlackPieces.push(that.ChessBoard[15].ChessPiece = ChessPiece("black", "pawn", "P", 1, 15));
             
-            that.WhitePieces.push(that.ChessBoard[48].ChessPiece = ChessPiece("white", "pawn", "P", 48));
-            that.WhitePieces.push(that.ChessBoard[49].ChessPiece = ChessPiece("white", "pawn", "P", 49));
-            that.WhitePieces.push(that.ChessBoard[50].ChessPiece = ChessPiece("white", "pawn", "P", 50));
-            that.WhitePieces.push(that.ChessBoard[51].ChessPiece = ChessPiece("white", "pawn", "P", 51));
-            that.WhitePieces.push(that.ChessBoard[52].ChessPiece = ChessPiece("white", "pawn", "P", 52));
-            that.WhitePieces.push(that.ChessBoard[53].ChessPiece = ChessPiece("white", "pawn", "P", 53));
-            that.WhitePieces.push(that.ChessBoard[54].ChessPiece = ChessPiece("white", "pawn", "P", 54));
-            that.WhitePieces.push(that.ChessBoard[55].ChessPiece = ChessPiece("white", "pawn", "P", 55));
-            that.WhitePieces.push(that.ChessBoard[56].ChessPiece = ChessPiece("white", "rook", "R", 56));
-            that.WhitePieces.push(that.ChessBoard[57].ChessPiece = ChessPiece("white", "knight", "N", 57));
-            that.WhitePieces.push(that.ChessBoard[58].ChessPiece = ChessPiece("white", "bishop", "B", 58));
-            that.WhitePieces.push(that.ChessBoard[59].ChessPiece = ChessPiece("white", "queen", "Q", 59));
-            that.WhitePieces.push(that.ChessBoard[60].ChessPiece = ChessPiece("white", "king", "K", 60));
-            that.WhitePieces.push(that.ChessBoard[61].ChessPiece = ChessPiece("white", "bishop", "B", 61));
-            that.WhitePieces.push(that.ChessBoard[62].ChessPiece = ChessPiece("white", "knight", "N", 62));
-            that.WhitePieces.push(that.ChessBoard[63].ChessPiece = ChessPiece("white", "rook", "R", 63));
+            that.WhitePieces.push(that.ChessBoard[48].ChessPiece = ChessPiece("white", "pawn", "P", 1, 48));
+            that.WhitePieces.push(that.ChessBoard[49].ChessPiece = ChessPiece("white", "pawn", "P", 1, 49));
+            that.WhitePieces.push(that.ChessBoard[50].ChessPiece = ChessPiece("white", "pawn", "P", 1, 50));
+            that.WhitePieces.push(that.ChessBoard[51].ChessPiece = ChessPiece("white", "pawn", "P", 1, 51));
+            that.WhitePieces.push(that.ChessBoard[52].ChessPiece = ChessPiece("white", "pawn", "P", 1, 52));
+            that.WhitePieces.push(that.ChessBoard[53].ChessPiece = ChessPiece("white", "pawn", "P", 1, 53));
+            that.WhitePieces.push(that.ChessBoard[54].ChessPiece = ChessPiece("white", "pawn", "P", 1, 54));
+            that.WhitePieces.push(that.ChessBoard[55].ChessPiece = ChessPiece("white", "pawn", "P", 1, 55));
+            that.WhitePieces.push(that.ChessBoard[56].ChessPiece = ChessPiece("white", "rook", "R", 1, 56));
+            that.WhitePieces.push(that.ChessBoard[57].ChessPiece = ChessPiece("white", "knight", "N", 5, 57));
+            that.WhitePieces.push(that.ChessBoard[58].ChessPiece = ChessPiece("white", "bishop", "B", 5, 58));
+            that.WhitePieces.push(that.ChessBoard[59].ChessPiece = ChessPiece("white", "queen", "Q", 8, 59));
+            that.WhitePieces.push(that.ChessBoard[60].ChessPiece = ChessPiece("white", "king", "K", 20, 60));
+            that.WhitePieces.push(that.ChessBoard[61].ChessPiece = ChessPiece("white", "bishop", "B", 5, 61));
+            that.WhitePieces.push(that.ChessBoard[62].ChessPiece = ChessPiece("white", "knight", "N", 5, 62));
+            that.WhitePieces.push(that.ChessBoard[63].ChessPiece = ChessPiece("white", "rook", "R", 6, 63));
             
         },
         draw: function() {
@@ -517,12 +518,12 @@ var RandomChess = function(graphics, textDrawing) {
         },
         update: function() {
             if (that.Transition != null)
-                return;
+                return true;
             
             that.FrameCount = that.FrameCount + 1;
-            if (that.FrameCount < 25)
+            if (that.FrameCount < 1)
             {
-                return;
+                return true;
             }
             that.FrameCount = 0;
             var pieces = null;
@@ -533,7 +534,7 @@ var RandomChess = function(graphics, textDrawing) {
             else
             {
                 that.FrameCount = 40;
-                return;
+                return true;
             }
             
             var count = pieces.length;
@@ -576,15 +577,44 @@ var RandomChess = function(graphics, textDrawing) {
             
             var availableCount = availablePieces.length;
             if (availableCount < 1)
-                return;
+                return false;
+            
+            var chessPieceIndex = -1;
+            var chessPieceMoveIndex = -1;
+            var targetValue = -1;
+            
+            // Find highest value capture move.  If there are no capture moves, default to random
+            for (var m = 0; m < availablePieces.length; m++) {
+                for (var n = 0; n < availableMoves[m].length; n++) {
+                    let attacker = availablePieces[m];
+                    let target = that.ChessBoard[(availableMoves[m])[n]].ChessPiece;
+                    if (target != null && target.Color != attacker.Color) {
+                        if (target.Value > targetValue)
+                        {
+                            chessPieceIndex = m;
+                            chessPieceMoveIndex = n;
+                            targetValue = target.Value;
+                        }
+                    }
+                }
+            }
             
             var index = Math.floor(Math.random() * 10000) % availableCount;
+            
+            if (chessPieceIndex >= 0)
+            {
+                index = chessPieceIndex;
+            }
             var chessPiece = availablePieces[index];
             
             var moves = availableMoves[index];
             if (moves.length > 0)
             {
                 var moveIndex = Math.floor(Math.random() * 10000) % moves.length;
+                
+                if (chessPieceMoveIndex >= 0)
+                    moveIndex = chessPieceMoveIndex;
+                
                 var theMove = moves[moveIndex];
             
                 var oldIndex = chessPiece.Index;
@@ -595,9 +625,9 @@ var RandomChess = function(graphics, textDrawing) {
                 {
                     if (currentPiece.Kind == "king")
                     {
-                        alert(chessPiece.Kind + " threatens");
+                        //alert(chessPiece.Kind + " threatens");
                         that.NextTurn = "none";
-                        return;
+                        return false;
                     }
                     currentPiece.Active = false;
                     currentPiece.Index = -1;
@@ -608,7 +638,10 @@ var RandomChess = function(graphics, textDrawing) {
                     that.NextTurn = "black";
                 else
                     that.NextTurn = "white";
+            } else {
+                return false;
             }
+            return true;
         }
     }
     return that;
