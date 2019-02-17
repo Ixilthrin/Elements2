@@ -1,11 +1,10 @@
-var ChessPiece = function(color, kind, symbol, value, index) {
+var ChessPiece = function(color, kind, symbol, value, id) {
     let that = {
         Color: color,
         Kind: kind,
         Symbol: symbol,
-        Active: true,
         Value: value,
-        Index: index
+        Id: id
     }
     return that;
 }
@@ -394,6 +393,15 @@ var RandomChess = function(graphics, textDrawing) {
         NextTurn: "white",
         FrameCount: 0,
         Transition: null,
+        GetChessPieceLocation: function (chessPiece) {
+            for (var i = 0; i < 64; i++)
+            {
+                let currentPiece = that.ChessBoard[i].ChessPiece;
+                if (currentPiece != null && currentPiece.Id == chessPiece.Id)
+                    return i;
+            }
+            return -1;
+        },
         GetAvailableMoves: function(pieces) {
             var count = pieces.length;
             var availablePieces = [];
@@ -401,7 +409,8 @@ var RandomChess = function(graphics, textDrawing) {
             for (var i = 0; i < count; i++)
             {
                 let thePiece = pieces[i];
-                if (thePiece != null && thePiece.Active)
+                let location = that.GetChessPieceLocation(thePiece);
+                if (thePiece != null && location > -1)
                 {
                     var moves = null;
                     if (thePiece.Kind == "pawn")
@@ -423,7 +432,7 @@ var RandomChess = function(graphics, textDrawing) {
                     if (moves == null)
                         continue;
                     
-                    var potentialMoves = moves.GetPotentialMoves(that.ChessBoard, thePiece.Index, that.NextTurn);
+                    var potentialMoves = moves.GetPotentialMoves(that.ChessBoard, location, that.NextTurn);
                     if (potentialMoves.length > 0)
                     {
                         availableMoves.push(potentialMoves);
@@ -496,7 +505,6 @@ var RandomChess = function(graphics, textDrawing) {
             {
                 that.ChessBoard[that.Transition.OldPosition].ChessPiece = null;
                 that.ChessBoard[that.Transition.NewPosition].ChessPiece = that.Transition.ChessPiece;
-                that.Transition.ChessPiece.Index = that.Transition.NewPosition;
                 that.Transition = null;
             }
             
@@ -658,8 +666,7 @@ var RandomChess = function(graphics, textDrawing) {
             }
             
             if (theMove > -1) {
-            
-                var oldIndex = chessPiece.Index;
+                var oldIndex = that.GetChessPieceLocation(chessPiece);
                 
                 var currentPiece = that.ChessBoard[theMove].ChessPiece;
                 
@@ -667,12 +674,9 @@ var RandomChess = function(graphics, textDrawing) {
                 {
                     if (currentPiece.Kind == "king")
                     {
-                        //alert(chessPiece.Kind + " threatens");
                         that.NextTurn = "none";
                         return false;
                     }
-                    currentPiece.Active = false;
-                    currentPiece.Index = -1;
                 }
                 
                 that.Transition = PieceTransition(chessPiece, oldIndex, theMove);
