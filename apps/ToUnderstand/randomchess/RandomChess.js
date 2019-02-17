@@ -394,6 +394,47 @@ var RandomChess = function(graphics, textDrawing) {
         NextTurn: "white",
         FrameCount: 0,
         Transition: null,
+        GetAvailableMoves: function(pieces) {
+            var count = pieces.length;
+            var availablePieces = [];
+            var availableMoves = [];
+            for (var i = 0; i < count; i++)
+            {
+                let thePiece = pieces[i];
+                if (thePiece != null && thePiece.Active)
+                {
+                    var moves = null;
+                    if (thePiece.Kind == "pawn")
+                        moves = PawnMoves();
+                    else if (thePiece.Kind == "rook")
+                        moves = RookMoves();
+                    else if (thePiece.Kind == "bishop")
+                        moves = BishopMoves();
+                    else if (thePiece.Kind == "knight")
+                        moves = KnightMoves();
+                    else if (thePiece.Kind == "queen")
+                    {
+                        moves = RookMoves();
+                        let bishopMoves = BishopMoves();
+                        for (var j = 0; j < bishopMoves.length; ++j)
+                            moves.push(bishipMoves);
+                    }
+                    
+                    if (moves == null)
+                        continue;
+                    
+                    var potentialMoves = moves.GetPotentialMoves(that.ChessBoard, thePiece.Index, that.NextTurn);
+                    if (potentialMoves.length > 0)
+                    {
+                        availableMoves.push(potentialMoves);
+                        availablePieces.push(thePiece);
+                    }
+                }
+            }
+            var result = [availablePieces, availableMoves];
+            return result;
+            
+        },
         initialize: function() {
             var newImage = new Image();
             newImage.src = "randomchess/chessboard.jpg";
@@ -527,95 +568,96 @@ var RandomChess = function(graphics, textDrawing) {
             }
             that.FrameCount = 0;
             var pieces = null;
-            if (that.NextTurn == "white")
+            var enemyPieces = null;
+            if (that.NextTurn == "white") {
                 pieces = that.WhitePieces;
-            else if (that.NextTurn == "black")
+                enemyPieces = that.BlackPieces;
+            } else if (that.NextTurn == "black") {
                 pieces = that.BlackPieces;
-            else
+                enemyPieces = that.WhitePieces;
+            } else
             {
                 that.FrameCount = 40;
-                return true;
+                return false;
             }
             
-            var count = pieces.length;
+            var available = that.GetAvailableMoves(pieces);
+            var availablePieces = available[0];
+            var availableMoves = available[1];
             
-            var availablePieces = [];
-            var availableMoves = [];
-            for (var i = 0; i < count; i++)
+            var availableEnemy = that.GetAvailableMoves(enemyPieces);
+            var enemyMoves = availableEnemy[1];
+            var allEnemyMoves = [];
+            for (let e = 0; e < enemyMoves.length; e++)
             {
-                let thePiece = pieces[i];
-                if (thePiece != null && thePiece.Active)
+                for (let f = 0; f < enemyMoves[e].length; f++)
                 {
-                    var moves = null;
-                    if (thePiece.Kind == "pawn")
-                        moves = PawnMoves();
-                    else if (thePiece.Kind == "rook")
-                        moves = RookMoves();
-                    else if (thePiece.Kind == "bishop")
-                        moves = BishopMoves();
-                    else if (thePiece.Kind == "knight")
-                        moves = KnightMoves();
-                    else if (thePiece.Kind == "queen")
-                    {
-                        moves = RookMoves();
-                        let bishopMoves = BishopMoves();
-                        for (var j = 0; j < bishopMoves.length; ++j)
-                            moves.push(bishipMoves);
-                    }
-                    
-                    if (moves == null)
-                        continue;
-                    
-                    var potentialMoves = moves.GetPotentialMoves(that.ChessBoard, thePiece.Index, that.NextTurn);
-                    if (potentialMoves.length > 0)
-                    {
-                        availableMoves.push(potentialMoves);
-                        availablePieces.push(thePiece);
-                    }
+                    if (allEnemyMoves.indexOf(enemyMoves[e][f]) < 0)
+                        allEnemyMoves.push((enemyMoves[e])[f]);
                 }
             }
             
-            var availableCount = availablePieces.length;
-            if (availableCount < 1)
-                return false;
             
-            var chessPieceIndex = -1;
-            var chessPieceMoveIndex = -1;
-            var targetValue = -1;
-            
-            // Find highest value capture move.  If there are no capture moves, default to random
-            for (var m = 0; m < availablePieces.length; m++) {
-                for (var n = 0; n < availableMoves[m].length; n++) {
-                    let attacker = availablePieces[m];
-                    let target = that.ChessBoard[(availableMoves[m])[n]].ChessPiece;
-                    if (target != null && target.Color != attacker.Color) {
-                        if (target.Value > targetValue)
-                        {
-                            chessPieceIndex = m;
-                            chessPieceMoveIndex = n;
-                            targetValue = target.Value;
+            var theMove = -1;
+
+            var tries = 0;
+            var maxTries = 200;
+            while (tries < maxTries && theMove == -1) {
+                if (tries > 100) alert();
+                var availableCount = availablePieces.length;
+                if (availableCount < 1)
+                    return false;
+                
+                var chessPieceIndex = -1;
+                var chessPieceMoveIndex = -1;
+                var targetValue = -1;
+                
+                // Find highest value capture move.  If there are no capture moves, default to random
+                // Do this randomly
+                var choice = Math.random();
+                if (choice >= .85)
+                {
+                    for (var m = 0; m < availablePieces.length; m++) {
+                        for (var n = 0; n < availableMoves[m].length; n++) {
+                            let attacker = availablePieces[m];
+                            let target = that.ChessBoard[(availableMoves[m])[n]].ChessPiece;
+                            if (target != null && target.Color != attacker.Color) {
+                                if (target.Value > targetValue)
+                                {
+                                    chessPieceIndex = m;
+                                    chessPieceMoveIndex = n;
+                                    targetValue = target.Value;
+                                }
+                            }
                         }
                     }
                 }
+                
+                var index = Math.floor(Math.random() * 10000) % availableCount;
+                
+                if (chessPieceIndex >= 0)
+                {
+                    index = chessPieceIndex;
+                }
+                var chessPiece = availablePieces[index];
+                
+                var moves = availableMoves[index];
+                if (moves.length > 0)
+                {
+                    var moveIndex = Math.floor(Math.random() * 10000) % moves.length;
+                    
+                    if (chessPieceMoveIndex >= 0)
+                        moveIndex = chessPieceMoveIndex;
+                    
+                    
+                    if (allEnemyMoves.indexOf(moves[moveIndex]) < 0 || tries == maxTries - 1) {
+                        theMove = moves[moveIndex];
+                    }
+                }
+                tries++;
             }
             
-            var index = Math.floor(Math.random() * 10000) % availableCount;
-            
-            if (chessPieceIndex >= 0)
-            {
-                index = chessPieceIndex;
-            }
-            var chessPiece = availablePieces[index];
-            
-            var moves = availableMoves[index];
-            if (moves.length > 0)
-            {
-                var moveIndex = Math.floor(Math.random() * 10000) % moves.length;
-                
-                if (chessPieceMoveIndex >= 0)
-                    moveIndex = chessPieceMoveIndex;
-                
-                var theMove = moves[moveIndex];
+            if (theMove > -1) {
             
                 var oldIndex = chessPiece.Index;
                 
