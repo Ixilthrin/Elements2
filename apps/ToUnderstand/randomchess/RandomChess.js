@@ -721,6 +721,16 @@ var RandomChess = function(graphics, textDrawing) {
                     that.NextTurn = "black";
                 else
                     that.NextTurn = "white";
+                
+                if (chessPiece.Kind == "pawn") {
+                    if ((chessPiece.Color == "white" && Math.floor(theMove / 8) == 0)
+                        || (chessPiece.Color == "black" && Math.floor(theMove / 8) == 7)) {
+               
+                            chessPiece.Kind = "queen";
+                            chessPiece.Symbol = "Q";
+                            chessPiece.Value = 8;                            
+                        }
+                }
             } else {
                 return false;
             }
