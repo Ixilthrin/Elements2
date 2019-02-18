@@ -393,23 +393,23 @@ var RandomChess = function(graphics, textDrawing) {
         NextTurn: "white",
         FrameCount: 0,
         Transition: null,
-        GetChessPieceLocation: function (chessPiece) {
+        GetChessPieceLocation: function (chessBoard, chessPiece) {
             for (var i = 0; i < 64; i++)
             {
-                let currentPiece = that.ChessBoard[i].ChessPiece;
+                let currentPiece = chessBoard[i].ChessPiece;
                 if (currentPiece != null && currentPiece.Id == chessPiece.Id)
                     return i;
             }
             return -1;
         },
-        GetAvailableMoves: function(pieces) {
+        GetAvailableMoves: function(chessBoard, pieces, color) {
             var count = pieces.length;
             var availablePieces = [];
             var availableMoves = [];
             for (var i = 0; i < count; i++)
             {
                 let thePiece = pieces[i];
-                let location = that.GetChessPieceLocation(thePiece);
+                let location = that.GetChessPieceLocation(chessBoard, thePiece);
                 if (thePiece != null && location > -1)
                 {
                     var moves = null;
@@ -432,7 +432,7 @@ var RandomChess = function(graphics, textDrawing) {
                     if (moves == null)
                         continue;
                     
-                    var potentialMoves = moves.GetPotentialMoves(that.ChessBoard, location, that.NextTurn);
+                    var potentialMoves = moves.GetPotentialMoves(chessBoard, location, color);
                     if (potentialMoves.length > 0)
                     {
                         availableMoves.push(potentialMoves);
@@ -589,29 +589,17 @@ var RandomChess = function(graphics, textDrawing) {
                 return false;
             }
             
-            var available = that.GetAvailableMoves(pieces);
+            var available = that.GetAvailableMoves(that.ChessBoard, pieces, that.NextTurn);
             var availablePieces = available[0];
             var availableMoves = available[1];
-            
-            var availableEnemy = that.GetAvailableMoves(enemyPieces);
-            var enemyMoves = availableEnemy[1];
-            var allEnemyMoves = [];
-            for (let e = 0; e < enemyMoves.length; e++)
-            {
-                for (let f = 0; f < enemyMoves[e].length; f++)
-                {
-                    if (allEnemyMoves.indexOf(enemyMoves[e][f]) < 0)
-                        allEnemyMoves.push((enemyMoves[e])[f]);
-                }
-            }
-            
             
             var theMove = -1;
 
             var tries = 0;
-            var maxTries = 200;
-            while (tries < maxTries && theMove == -1) {
-                if (tries > 100) alert();
+            var maxTries = 20;
+            var chessPiece = null;
+            var testChessBoard = [];
+            while (tries < maxTries) {
                 var availableCount = availablePieces.length;
                 if (availableCount < 1)
                     return false;
@@ -623,7 +611,7 @@ var RandomChess = function(graphics, textDrawing) {
                 // Find highest value capture move.  If there are no capture moves, default to random
                 // Do this randomly
                 var choice = Math.random();
-                if (choice >= .85)
+                if (choice >= .35)
                 {
                     for (var m = 0; m < availablePieces.length; m++) {
                         for (var n = 0; n < availableMoves[m].length; n++) {
@@ -647,7 +635,7 @@ var RandomChess = function(graphics, textDrawing) {
                 {
                     index = chessPieceIndex;
                 }
-                var chessPiece = availablePieces[index];
+                chessPiece = availablePieces[index];
                 
                 var moves = availableMoves[index];
                 if (moves.length > 0)
@@ -658,15 +646,42 @@ var RandomChess = function(graphics, textDrawing) {
                         moveIndex = chessPieceMoveIndex;
                     
                     
-                    if (allEnemyMoves.indexOf(moves[moveIndex]) < 0 || tries == maxTries - 1) {
-                        theMove = moves[moveIndex];
+                    //if (allEnemyMoves.indexOf(moves[moveIndex]) < 0 || tries == maxTries - 1) {
+                    theMove = moves[moveIndex];
+                    testChessBoard = [];
+                    for (let q = 0; q < that.ChessBoard.length; q++)
+                    {
+                        let square = ChessSquare();
+                        square.ChessPiece = that.ChessBoard[q].ChessPiece;                        
+                        testChessBoard.push(square);
+                    }
+                    
+                    let oldIndex = that.GetChessPieceLocation(testChessBoard, chessPiece);
+                    
+                    testChessBoard[oldIndex].ChessPiece = null;
+                    testChessBoard[theMove].ChessPiece = chessPiece;
+                    let enemyColor = "white";
+                    if (that.NextTurn == "white")
+                        enemyColor = "black";
+                    let availableEnemy = that.GetAvailableMoves(testChessBoard, enemyPieces, enemyColor);
+                    let enemyMoves = availableEnemy[1];
+                    var allEnemyMoves = [];
+                    for (let e = 0; e < enemyMoves.length; e++)
+                    {
+                        for (let f = 0; f < enemyMoves[e].length; f++)
+                        {
+                            if (allEnemyMoves.indexOf(enemyMoves[e][f]) < 0)
+                                allEnemyMoves.push((enemyMoves[e])[f]);
+                        }
+                    }
+                    if (allEnemyMoves.indexOf(theMove) < 0) {
+                        tries = maxTries
                     }
                 }
                 tries++;
             }
-            
             if (theMove > -1) {
-                var oldIndex = that.GetChessPieceLocation(chessPiece);
+                var oldIndex = that.GetChessPieceLocation(that.ChessBoard, chessPiece);
                 
                 var currentPiece = that.ChessBoard[theMove].ChessPiece;
                 
