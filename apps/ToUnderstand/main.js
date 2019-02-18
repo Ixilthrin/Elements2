@@ -18,7 +18,7 @@ function draw()
             SceneController = RandomChess(Graphics, TextDrawing);
             SceneController.initialize();
             
-        }, 10000);
+        }, 4000);
     }
     requestAnimationFrame(draw);
 }
