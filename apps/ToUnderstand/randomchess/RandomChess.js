@@ -9,6 +9,42 @@ var ChessPiece = function(color, kind, symbol, value, id) {
     return that;
 }
 
+var KingMoves = function() {
+    let that = {
+        GetPotentialMoves: function(chessboard, currentIndex, color) {
+            var indices = [];
+            // up
+            var tempIndex = currentIndex;
+                tempIndex = currentIndex - 8;
+                if (tempIndex >= 0 && (chessboard[tempIndex] == null || chessboard[tempIndex].Color != color))
+                    indices.push(tempIndex);
+            // right
+            var tempIndex = currentIndex;
+            if (currentIndex % 8 < 7)
+            {
+                tempIndex = currentIndex + 1;
+                if (tempIndex < 64 && (chessboard[tempIndex] == null || chessboard[tempIndex].Color != color))
+                    indices.push(tempIndex);
+            }
+            // left
+            var tempIndex = currentIndex;
+            if (currentIndex % 8 > 0)
+            {
+                tempIndex = currentIndex - 1;
+                if (tempIndex >= 0 && (chessboard[tempIndex] == null || chessboard[tempIndex].Color != color))
+                    indices.push(tempIndex);
+            }
+            // down
+            var tempIndex = currentIndex;
+                tempIndex = currentIndex + 8;
+                if (tempIndex < 64 && (chessboard[tempIndex] == null || chessboard[tempIndex].Color != color))
+                    indices.push(tempIndex);
+            return indices;
+        }
+    }
+    return that;
+}
+
 var KnightMoves = function() {
     let that = {
         GetPotentialMoves: function(chessboard, currentIndex, color) {
@@ -422,6 +458,9 @@ var RandomChess = function(graphics, textDrawing) {
                         for (var j = 0; j < bishopMoves.length; ++j)
                             moves.push(bishipMoves);
                     }
+                    else if (thePiece.Kind == "king") {
+                        moves = KingMoves();
+                    }
                     
                     if (moves == null)
                         continue;
@@ -598,7 +637,7 @@ var RandomChess = function(graphics, textDrawing) {
                 // Find highest value capture move.  If there are no capture moves, default to random
                 // Do this randomly
                 var choice = Math.random();
-                if (choice >= .35)
+                if (choice >= .2)
                 {
                     for (var m = 0; m < availablePieces.length; m++) {
                         for (var n = 0; n < availableMoves[m].length; n++) {
