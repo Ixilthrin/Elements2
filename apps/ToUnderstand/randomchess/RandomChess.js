@@ -9,13 +9,6 @@ var ChessPiece = function(color, kind, symbol, value, id) {
     return that;
 }
 
-var ChessSquare = function() {
-    let that = {
-        ChessPiece: null
-    }
-    return that;
-}
-
 var KnightMoves = function() {
     let that = {
         GetPotentialMoves: function(chessboard, currentIndex, color) {
@@ -25,7 +18,7 @@ var KnightMoves = function() {
             if (currentIndex % 8 < 7)
             {
                 tempIndex = currentIndex - 15;
-                if (tempIndex >= 0 && (chessboard[tempIndex].ChessPiece == null || chessboard[tempIndex].ChessPiece.Color != color))
+                if (tempIndex >= 0 && (chessboard[tempIndex] == null || chessboard[tempIndex].Color != color))
                     indices.push(tempIndex);
             }
             // up 1- right 2
@@ -33,7 +26,7 @@ var KnightMoves = function() {
             if (currentIndex % 8 < 6)
             {
                 tempIndex = currentIndex - 6;
-                if (tempIndex >= 0 && (chessboard[tempIndex].ChessPiece == null || chessboard[tempIndex].ChessPiece.Color != color))
+                if (tempIndex >= 0 && (chessboard[tempIndex] == null || chessboard[tempIndex].Color != color))
                     indices.push(tempIndex);
             }
             // down 2 -right 1
@@ -41,7 +34,7 @@ var KnightMoves = function() {
             if (currentIndex % 8 < 7)
             {
                 tempIndex = currentIndex + 17;
-                if (tempIndex < 64 && (chessboard[tempIndex].ChessPiece == null || chessboard[tempIndex].ChessPiece.Color != color))
+                if (tempIndex < 64 && (chessboard[tempIndex] == null || chessboard[tempIndex].Color != color))
                     indices.push(tempIndex);
             }
             // down 1 -right 2
@@ -49,7 +42,7 @@ var KnightMoves = function() {
             if (currentIndex % 8 < 6)
             {
                 tempIndex = currentIndex + 10;
-                if (tempIndex < 64 && (chessboard[tempIndex].ChessPiece == null || chessboard[tempIndex].ChessPiece.Color != color))
+                if (tempIndex < 64 && (chessboard[tempIndex] == null || chessboard[tempIndex].Color != color))
                     indices.push(tempIndex);
             }
             // down 2 - left 1
@@ -57,7 +50,7 @@ var KnightMoves = function() {
             if (currentIndex % 8 > 0)
             {
                 tempIndex = currentIndex + 15;
-                if (tempIndex < 64 && (chessboard[tempIndex].ChessPiece == null || chessboard[tempIndex].ChessPiece.Color != color))
+                if (tempIndex < 64 && (chessboard[tempIndex] == null || chessboard[tempIndex].Color != color))
                     indices.push(tempIndex);
             }
             // down 1 - left 2
@@ -65,7 +58,7 @@ var KnightMoves = function() {
             if (currentIndex % 8 > 1)
             {
                 tempIndex = currentIndex + 6;
-                if (tempIndex < 64 && (chessboard[tempIndex].ChessPiece == null || chessboard[tempIndex].ChessPiece.Color != color))
+                if (tempIndex < 64 && (chessboard[tempIndex] == null || chessboard[tempIndex].Color != color))
                     indices.push(tempIndex);
             }
             // up 2 -left 1
@@ -73,7 +66,7 @@ var KnightMoves = function() {
             if (currentIndex % 8 > 0)
             {
                 tempIndex = currentIndex - 17;
-                if (tempIndex >= 0 && (chessboard[tempIndex].ChessPiece == null || chessboard[tempIndex].ChessPiece.Color != color))
+                if (tempIndex >= 0 && (chessboard[tempIndex] == null || chessboard[tempIndex].Color != color))
                     indices.push(tempIndex);
             }
             // up 1 -left 2
@@ -81,7 +74,7 @@ var KnightMoves = function() {
             if (currentIndex % 8 > 1)
             {
                 tempIndex = currentIndex - 10;
-                if (tempIndex >= 0 && (chessboard[tempIndex].ChessPiece == null || chessboard[tempIndex].ChessPiece.Color != color))
+                if (tempIndex >= 0 && (chessboard[tempIndex] == null || chessboard[tempIndex].Color != color))
                     indices.push(tempIndex);
             }
             return indices;
@@ -110,9 +103,9 @@ var BishopMoves = function() {
                     canContinue = false;
                     break;
                 }
-                if (chessboard[tempIndex].ChessPiece != null)
+                if (chessboard[tempIndex] != null)
                 {
-                    if (chessboard[tempIndex].ChessPiece.Color != color)
+                    if (chessboard[tempIndex].Color != color)
                         indices.push(tempIndex);
                     canContinue = false;
                     break;
@@ -135,9 +128,9 @@ var BishopMoves = function() {
                     canContinue = false;
                     break;
                 }
-                if (chessboard[tempIndex].ChessPiece != null)
+                if (chessboard[tempIndex] != null)
                 {
-                    if (chessboard[tempIndex].ChessPiece.Color != color)
+                    if (chessboard[tempIndex].Color != color)
                         indices.push(tempIndex);
                     canContinue = false;
                     break;
@@ -160,9 +153,9 @@ var BishopMoves = function() {
                     canContinue = false;
                     break;
                 }
-                if (chessboard[tempIndex].ChessPiece != null)
+                if (chessboard[tempIndex] != null)
                 {
-                    if (chessboard[tempIndex].ChessPiece.Color != color)
+                    if (chessboard[tempIndex].Color != color)
                         indices.push(tempIndex);
                     canContinue = false;
                     break;
@@ -185,9 +178,9 @@ var BishopMoves = function() {
                     canContinue = false;
                     break;
                 }
-                if (chessboard[tempIndex].ChessPiece != null)
+                if (chessboard[tempIndex] != null)
                 {
-                    if (chessboard[tempIndex].ChessPiece.Color != color)
+                    if (chessboard[tempIndex].Color != color)
                         indices.push(tempIndex);
                     canContinue = false;
                     break;
@@ -215,9 +208,9 @@ var RookMoves = function() {
                     canContinue = false;
                     break;
                 }
-                if (chessboard[tempIndex].ChessPiece != null)
+                if (chessboard[tempIndex] != null)
                 {
-                    if (chessboard[tempIndex].ChessPiece.Color != color)
+                    if (chessboard[tempIndex].Color != color)
                         indices.push(tempIndex);
                     canContinue = false;
                     break;
@@ -235,9 +228,9 @@ var RookMoves = function() {
                     canContinue = false;
                     break;
                 }
-                if (chessboard[tempIndex].ChessPiece != null)
+                if (chessboard[tempIndex] != null)
                 {
-                    if (chessboard[tempIndex].ChessPiece.Color != color)
+                    if (chessboard[tempIndex].Color != color)
                         indices.push(tempIndex);
                     canContinue = false;
                     break;
@@ -260,9 +253,9 @@ var RookMoves = function() {
                     canContinue = false;
                     break;
                 }
-                if (chessboard[tempIndex].ChessPiece != null)
+                if (chessboard[tempIndex] != null)
                 {
-                    if (chessboard[tempIndex].ChessPiece.Color != color)
+                    if (chessboard[tempIndex].Color != color)
                         indices.push(tempIndex);
                     canContinue = false;
                     break;
@@ -285,9 +278,9 @@ var RookMoves = function() {
                     canContinue = false;
                     break;
                 }
-                if (chessboard[tempIndex].ChessPiece != null)
+                if (chessboard[tempIndex] != null)
                 {
-                    if (chessboard[tempIndex].ChessPiece.Color != color)
+                    if (chessboard[tempIndex].Color != color)
                         indices.push(tempIndex);
                     canContinue = false;
                     break;
@@ -307,12 +300,12 @@ var PawnMoves = function() {
             if (color == "white") {
                 //check single move
                 let tempIndex = currentIndex - 8;
-                if (tempIndex >= 0 && chessboard[tempIndex].ChessPiece == null) {
+                if (tempIndex >= 0 && chessboard[tempIndex] == null) {
                     indices.push(tempIndex);
                     
                     //check double move
                     tempIndex = currentIndex - 16;
-                    if (tempIndex >= 0 && currentIndex < 16 && chessboard[tempIndex].ChessPiece == null) {
+                    if (tempIndex >= 0 && currentIndex < 16 && chessboard[tempIndex] == null) {
                         indices.push(tempIndex);
                     }
                 }
@@ -320,26 +313,26 @@ var PawnMoves = function() {
                 if (currentIndex % 8 > 1)
                 { 
                     tempIndex = currentIndex - 9;
-                    if (tempIndex >= 0 && chessboard[tempIndex].ChessPiece != null && chessboard[tempIndex].ChessPiece.Color == "black")
+                    if (tempIndex >= 0 && chessboard[tempIndex] != null && chessboard[tempIndex].Color == "black")
                        indices.push(tempIndex);
                 }
                 
                 if (currentIndex % 8 < 7)
                 {
                     tempIndex = currentIndex - 7;
-                    if (tempIndex >=0 && chessboard[tempIndex].ChessPiece != null && chessboard[tempIndex].ChessPiece.Color == "black")
+                    if (tempIndex >=0 && chessboard[tempIndex] != null && chessboard[tempIndex].Color == "black")
                         indices.push(tempIndex);
                 }
                 
             } else if (color == "black") {
                 //check single move
                 let tempIndex = currentIndex + 8;
-                if (tempIndex < 64 && chessboard[tempIndex].ChessPiece == null) {
+                if (tempIndex < 64 && chessboard[tempIndex] == null) {
                     indices.push(tempIndex);
                     
                     //check double move
                     tempIndex = currentIndex + 16;
-                    if (tempIndex < 64 && currentIndex > 48 && chessboard[tempIndex].ChessPiece == null) {
+                    if (tempIndex < 64 && currentIndex > 48 && chessboard[tempIndex] == null) {
                         indices.push(tempIndex);
                     }
                 }
@@ -348,14 +341,14 @@ var PawnMoves = function() {
                 if (currentIndex % 8 > 1)
                 {
                     tempIndex = currentIndex + 7;
-                    if (tempIndex < 64 && chessboard[tempIndex].ChessPiece != null && chessboard[tempIndex].ChessPiece.Color == "white")
+                    if (tempIndex < 64 && chessboard[tempIndex] != null && chessboard[tempIndex].Color == "white")
                         indices.push(tempIndex);
                 }
                 
                 if (currentIndex % 8 < 7)
                 {
                     tempIndex = currentIndex + 9;
-                    if (tempIndex < 64 && chessboard[tempIndex].ChessPiece != null && chessboard[tempIndex].ChessPiece.Color == "white")
+                    if (tempIndex < 64 && chessboard[tempIndex] != null && chessboard[tempIndex].Color == "white")
                        indices.push(tempIndex);
                 }
             }
@@ -388,6 +381,7 @@ var RandomChess = function(graphics, textDrawing) {
         TextDrawing: textDrawing,
         ChessboardImage: null,
         ChessBoard: [],
+        TestChessBoard: [],
         WhitePieces: [],
         BlackPieces: [],
         NextTurn: "white",
@@ -396,7 +390,7 @@ var RandomChess = function(graphics, textDrawing) {
         GetChessPieceLocation: function (chessBoard, chessPiece) {
             for (var i = 0; i < 64; i++)
             {
-                let currentPiece = chessBoard[i].ChessPiece;
+                let currentPiece = chessBoard[i];
                 if (currentPiece != null && currentPiece.Id == chessPiece.Id)
                     return i;
             }
@@ -452,45 +446,39 @@ var RandomChess = function(graphics, textDrawing) {
                 that.Graphics.needsRedraw = true;
             });
             
-            for (var i = 0; i < 64; ++i)
-            {
-                let square = ChessSquare();
-                that.ChessBoard.push(square);
-            }
+            that.BlackPieces.push(that.ChessBoard[0] = ChessPiece("black", "rook", "R", 6, 0));
+            that.BlackPieces.push(that.ChessBoard[1] = ChessPiece("black", "knight", "N", 5, 1));
+            that.BlackPieces.push(that.ChessBoard[2] = ChessPiece("black", "bishop", "B", 5, 2));
+            that.BlackPieces.push(that.ChessBoard[3] = ChessPiece("black", "queen", "Q", 8, 3));
+            that.BlackPieces.push(that.ChessBoard[4] = ChessPiece("black", "king", "K", 20, 4));
+            that.BlackPieces.push(that.ChessBoard[5] = ChessPiece("black", "bishop", "B", 5, 5));
+            that.BlackPieces.push(that.ChessBoard[6] = ChessPiece("black", "knight", "N", 5, 6));
+            that.BlackPieces.push(that.ChessBoard[7] = ChessPiece("black", "rook", "R", 6, 7));
+            that.BlackPieces.push(that.ChessBoard[8] = ChessPiece("black", "pawn", "P", 1, 8));
+            that.BlackPieces.push(that.ChessBoard[9] = ChessPiece("black", "pawn", "P", 1, 9));
+            that.BlackPieces.push(that.ChessBoard[10] = ChessPiece("black", "pawn", "P", 1, 10));
+            that.BlackPieces.push(that.ChessBoard[11] = ChessPiece("black", "pawn", "P", 1, 11));
+            that.BlackPieces.push(that.ChessBoard[12] = ChessPiece("black", "pawn", "P", 1, 12));
+            that.BlackPieces.push(that.ChessBoard[13] = ChessPiece("black", "pawn", "P", 1, 13));
+            that.BlackPieces.push(that.ChessBoard[14] = ChessPiece("black", "pawn", "P", 1, 14));
+            that.BlackPieces.push(that.ChessBoard[15] = ChessPiece("black", "pawn", "P", 1, 15));
             
-            that.BlackPieces.push(that.ChessBoard[0].ChessPiece = ChessPiece("black", "rook", "R", 6, 0));
-            that.BlackPieces.push(that.ChessBoard[1].ChessPiece = ChessPiece("black", "knight", "N", 5, 1));
-            that.BlackPieces.push(that.ChessBoard[2].ChessPiece = ChessPiece("black", "bishop", "B", 5, 2));
-            that.BlackPieces.push(that.ChessBoard[3].ChessPiece = ChessPiece("black", "queen", "Q", 8, 3));
-            that.BlackPieces.push(that.ChessBoard[4].ChessPiece = ChessPiece("black", "king", "K", 20, 4));
-            that.BlackPieces.push(that.ChessBoard[5].ChessPiece = ChessPiece("black", "bishop", "B", 5, 5));
-            that.BlackPieces.push(that.ChessBoard[6].ChessPiece = ChessPiece("black", "knight", "N", 5, 6));
-            that.BlackPieces.push(that.ChessBoard[7].ChessPiece = ChessPiece("black", "rook", "R", 6, 7));
-            that.BlackPieces.push(that.ChessBoard[8].ChessPiece = ChessPiece("black", "pawn", "P", 1, 8));
-            that.BlackPieces.push(that.ChessBoard[9].ChessPiece = ChessPiece("black", "pawn", "P", 1, 9));
-            that.BlackPieces.push(that.ChessBoard[10].ChessPiece = ChessPiece("black", "pawn", "P", 1, 10));
-            that.BlackPieces.push(that.ChessBoard[11].ChessPiece = ChessPiece("black", "pawn", "P", 1, 11));
-            that.BlackPieces.push(that.ChessBoard[12].ChessPiece = ChessPiece("black", "pawn", "P", 1, 12));
-            that.BlackPieces.push(that.ChessBoard[13].ChessPiece = ChessPiece("black", "pawn", "P", 1, 13));
-            that.BlackPieces.push(that.ChessBoard[14].ChessPiece = ChessPiece("black", "pawn", "P", 1, 14));
-            that.BlackPieces.push(that.ChessBoard[15].ChessPiece = ChessPiece("black", "pawn", "P", 1, 15));
-            
-            that.WhitePieces.push(that.ChessBoard[48].ChessPiece = ChessPiece("white", "pawn", "P", 1, 48));
-            that.WhitePieces.push(that.ChessBoard[49].ChessPiece = ChessPiece("white", "pawn", "P", 1, 49));
-            that.WhitePieces.push(that.ChessBoard[50].ChessPiece = ChessPiece("white", "pawn", "P", 1, 50));
-            that.WhitePieces.push(that.ChessBoard[51].ChessPiece = ChessPiece("white", "pawn", "P", 1, 51));
-            that.WhitePieces.push(that.ChessBoard[52].ChessPiece = ChessPiece("white", "pawn", "P", 1, 52));
-            that.WhitePieces.push(that.ChessBoard[53].ChessPiece = ChessPiece("white", "pawn", "P", 1, 53));
-            that.WhitePieces.push(that.ChessBoard[54].ChessPiece = ChessPiece("white", "pawn", "P", 1, 54));
-            that.WhitePieces.push(that.ChessBoard[55].ChessPiece = ChessPiece("white", "pawn", "P", 1, 55));
-            that.WhitePieces.push(that.ChessBoard[56].ChessPiece = ChessPiece("white", "rook", "R", 1, 56));
-            that.WhitePieces.push(that.ChessBoard[57].ChessPiece = ChessPiece("white", "knight", "N", 5, 57));
-            that.WhitePieces.push(that.ChessBoard[58].ChessPiece = ChessPiece("white", "bishop", "B", 5, 58));
-            that.WhitePieces.push(that.ChessBoard[59].ChessPiece = ChessPiece("white", "queen", "Q", 8, 59));
-            that.WhitePieces.push(that.ChessBoard[60].ChessPiece = ChessPiece("white", "king", "K", 20, 60));
-            that.WhitePieces.push(that.ChessBoard[61].ChessPiece = ChessPiece("white", "bishop", "B", 5, 61));
-            that.WhitePieces.push(that.ChessBoard[62].ChessPiece = ChessPiece("white", "knight", "N", 5, 62));
-            that.WhitePieces.push(that.ChessBoard[63].ChessPiece = ChessPiece("white", "rook", "R", 6, 63));
+            that.WhitePieces.push(that.ChessBoard[48] = ChessPiece("white", "pawn", "P", 1, 48));
+            that.WhitePieces.push(that.ChessBoard[49] = ChessPiece("white", "pawn", "P", 1, 49));
+            that.WhitePieces.push(that.ChessBoard[50] = ChessPiece("white", "pawn", "P", 1, 50));
+            that.WhitePieces.push(that.ChessBoard[51] = ChessPiece("white", "pawn", "P", 1, 51));
+            that.WhitePieces.push(that.ChessBoard[52] = ChessPiece("white", "pawn", "P", 1, 52));
+            that.WhitePieces.push(that.ChessBoard[53] = ChessPiece("white", "pawn", "P", 1, 53));
+            that.WhitePieces.push(that.ChessBoard[54] = ChessPiece("white", "pawn", "P", 1, 54));
+            that.WhitePieces.push(that.ChessBoard[55] = ChessPiece("white", "pawn", "P", 1, 55));
+            that.WhitePieces.push(that.ChessBoard[56] = ChessPiece("white", "rook", "R", 1, 56));
+            that.WhitePieces.push(that.ChessBoard[57] = ChessPiece("white", "knight", "N", 5, 57));
+            that.WhitePieces.push(that.ChessBoard[58] = ChessPiece("white", "bishop", "B", 5, 58));
+            that.WhitePieces.push(that.ChessBoard[59] = ChessPiece("white", "queen", "Q", 8, 59));
+            that.WhitePieces.push(that.ChessBoard[60] = ChessPiece("white", "king", "K", 20, 60));
+            that.WhitePieces.push(that.ChessBoard[61] = ChessPiece("white", "bishop", "B", 5, 61));
+            that.WhitePieces.push(that.ChessBoard[62] = ChessPiece("white", "knight", "N", 5, 62));
+            that.WhitePieces.push(that.ChessBoard[63] = ChessPiece("white", "rook", "R", 6, 63));
             
         },
         draw: function() {
@@ -503,8 +491,8 @@ var RandomChess = function(graphics, textDrawing) {
             
             if (that.Transition != null && that.Transition.Progress > 1)
             {
-                that.ChessBoard[that.Transition.OldPosition].ChessPiece = null;
-                that.ChessBoard[that.Transition.NewPosition].ChessPiece = that.Transition.ChessPiece;
+                that.ChessBoard[that.Transition.OldPosition] = null;
+                that.ChessBoard[that.Transition.NewPosition] = that.Transition.ChessPiece;
                 that.Transition = null;
             }
             
@@ -512,7 +500,7 @@ var RandomChess = function(graphics, textDrawing) {
             {
                 let x = 112 + (i % 8) * 62.5;
                 let y = 150 + Math.floor(i / 8) * 62.5;
-                let chessPiece = that.ChessBoard[i].ChessPiece;
+                let chessPiece = that.ChessBoard[i];
                 if (chessPiece == null)
                     continue;
                 
@@ -598,7 +586,6 @@ var RandomChess = function(graphics, textDrawing) {
             var tries = 0;
             var maxTries = 20;
             var chessPiece = null;
-            var testChessBoard = [];
             while (tries < maxTries) {
                 var availableCount = availablePieces.length;
                 if (availableCount < 1)
@@ -616,7 +603,7 @@ var RandomChess = function(graphics, textDrawing) {
                     for (var m = 0; m < availablePieces.length; m++) {
                         for (var n = 0; n < availableMoves[m].length; n++) {
                             let attacker = availablePieces[m];
-                            let target = that.ChessBoard[(availableMoves[m])[n]].ChessPiece;
+                            let target = that.ChessBoard[(availableMoves[m])[n]];
                             if (target != null && target.Color != attacker.Color) {
                                 if (target.Value > targetValue)
                                 {
@@ -646,24 +633,20 @@ var RandomChess = function(graphics, textDrawing) {
                         moveIndex = chessPieceMoveIndex;
                     
                     
-                    //if (allEnemyMoves.indexOf(moves[moveIndex]) < 0 || tries == maxTries - 1) {
                     theMove = moves[moveIndex];
-                    testChessBoard = [];
                     for (let q = 0; q < that.ChessBoard.length; q++)
                     {
-                        let square = ChessSquare();
-                        square.ChessPiece = that.ChessBoard[q].ChessPiece;                        
-                        testChessBoard.push(square);
+                        that.TestChessBoard[q] = that.ChessBoard[q];
                     }
                     
-                    let oldIndex = that.GetChessPieceLocation(testChessBoard, chessPiece);
+                    let oldIndex = that.GetChessPieceLocation(that.TestChessBoard, chessPiece);
                     
-                    testChessBoard[oldIndex].ChessPiece = null;
-                    testChessBoard[theMove].ChessPiece = chessPiece;
+                    that.TestChessBoard[oldIndex] = null;
+                    that.TestChessBoard[theMove] = chessPiece;
                     let enemyColor = "white";
                     if (that.NextTurn == "white")
                         enemyColor = "black";
-                    let availableEnemy = that.GetAvailableMoves(testChessBoard, enemyPieces, enemyColor);
+                    let availableEnemy = that.GetAvailableMoves(that.TestChessBoard, enemyPieces, enemyColor);
                     let enemyMoves = availableEnemy[1];
                     var allEnemyMoves = [];
                     for (let e = 0; e < enemyMoves.length; e++)
@@ -683,7 +666,7 @@ var RandomChess = function(graphics, textDrawing) {
             if (theMove > -1) {
                 var oldIndex = that.GetChessPieceLocation(that.ChessBoard, chessPiece);
                 
-                var currentPiece = that.ChessBoard[theMove].ChessPiece;
+                var currentPiece = that.ChessBoard[theMove];
                 
                 if (currentPiece != null)
                 {
