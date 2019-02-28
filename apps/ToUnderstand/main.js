@@ -14,11 +14,8 @@ function draw()
 	
     SceneController.draw();
     if (!SceneController.update()) {
-        setTimeout(()=>{
-            SceneController = RandomChess(Graphics, TextDrawing);
-            SceneController.initialize();
-            
-        }, 4000);
+        if (!SceneController.reset())
+            return;
     }
     requestAnimationFrame(draw);
 }
@@ -31,13 +28,9 @@ function main()
     UserInput = UserInputSystem(document, Graphics.canvas);
     UserInput.initialize();
     TextDrawing = TextDrawingUtil();
-            SceneController = RandomChess(Graphics, TextDrawing);
-            SceneController.initialize();
-            draw();
-    //SceneController = AsyncAwaitLecture(Graphics, TextDrawing);
+    SceneController = AsyncAwaitLecture(Graphics, TextDrawing);
     //SceneController = RandomChess(Graphics, TextDrawing);
- 
-    //SceneController.initialize();
-    //draw();
+    SceneController.initialize();
+    draw();
 }
 

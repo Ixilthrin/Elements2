@@ -15,6 +15,7 @@ var AsyncAwaitLecture = function(graphics, textDrawing) {
             that.commands.push((Graphics) => that.TextDrawing.drawDefaultText(that.Graphics.context, "Thread Scheduler", that.x, that.y+100));
         },
         draw: function() {
+            graphics.view.clearScreen();
             for (var i = 0; i < that.commands.length; i++)
             {
                 that.commands[i](that.Graphics);
@@ -26,6 +27,9 @@ var AsyncAwaitLecture = function(graphics, textDrawing) {
                 that.x++;
                 that.Graphics.needsRedraw = true;
             }
+        },
+        reset: function() {
+            return true;
         }
     }
     return that;

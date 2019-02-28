@@ -735,6 +735,14 @@ var RandomChess = function(graphics, textDrawing) {
                 return false;
             }
             return true;
+        },
+        reset: function() {
+            setTimeout(()=>{
+                SceneController = RandomChess(Graphics, TextDrawing);
+                SceneController.initialize();
+            
+            }, 4000);
+            return true;
         }
     }
     return that;
