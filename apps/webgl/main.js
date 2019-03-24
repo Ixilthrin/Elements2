@@ -1,7 +1,8 @@
-// main.js for the ToUnderstand project
+// main.js for the Graph project
 var Graphics;
 var UserInput;
 var TextDrawing;
+var ImageUtility;
 var SceneController;
 
 // This is an active canvas due to this loop with continuous updating
@@ -17,15 +18,16 @@ function draw()
 
 function main() 
 {
-    var view = new View2d();
+    var view = new View3d();
 	Graphics = GraphicsSystem(document.getElementById("canvas"), view);
 	Graphics.initialize();
     UserInput = UserInputSystem(document, Graphics.canvas);
     UserInput.initialize();
     TextDrawing = TextDrawingUtil();
-    //SceneController = AsyncAwaitLecture(Graphics, TextDrawing);
-    SceneController = RandomChess(Graphics, TextDrawing);
+    ImageUtility = ImageUtil(Graphics, TextDrawing);
+    SceneController = Graph(Graphics, TextDrawing, ImageUtility);
     SceneController.initialize();
+    //alert();
     draw();
 }
 

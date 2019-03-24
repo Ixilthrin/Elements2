@@ -1,13 +1,15 @@
 function View3d()
 {
+    //alert("view3d constructor");
 this.drawCount1 = 0;
 this.frustum = new Frustum();
+view3dFrustum = this.frustum;
 this.rotationY = .1;
 this.meshShaderProgram;
 this.lineShaderProgram;
 this.vPosition;
 this.vTexCoord;
-this.mMatrix = this.frustum.identity;
+//this.mMatrix = this.frustum.identity;
 this.mMatrix = this.frustum.transform;
 this.pMatrix = this.frustum.getProjectionMatrix();
 this.coords3d = new Array();
@@ -27,6 +29,8 @@ this.tex;
 this.drawing = false;
 }
 
+var view3dFrustum;
+
 
 View3d.prototype.createContext = function(canvas) {
 	var gl;
@@ -44,10 +48,12 @@ View3d.prototype.createContext = function(canvas) {
 	}
 	
 	this.viewCanvas.addEventListener("mousewheel", function(e) {
-	    this.frustum.moveForward(e.wheelDelta / 2000);
+        //alert("wheel: " + e.wheelDelta);
+        //alert("frustum: " + view3dFrustum);
+	    view3dFrustum.moveForward(e.wheelDelta / 100);
 	});
 	
-	
+	//gl.enable(gl.BLEND);
 	return gl;
 }
 
@@ -55,31 +61,32 @@ View3d.prototype.initializeView = function(gl) {
 	this.initMeshShaders(gl);
 	this.initLineShaders(gl);
 	this.initBuffers(gl);
-	//gl.clearColor(1, 0, 0, 1);
+	gl.clearColor(.8, .8, .8, 1);
 	gl.enable(gl.DEPTH_TEST);
-    var image = new Image();
-	image.src = "planet-earth.jpg";
-	var view3d = this;
-	image.onload = function()
-	{
-	    view3d.createTexture(gl, image);
-	/*
-	acanvas = document.createElement('canvas');
-    acanvas.width = 100;
-    acanvas.height = 100;
-    acontext = acanvas.getContext('2d');
-    acontext.clearRect(0, 0, backCanvas.width, backCanvas.height);
-        acontext.beginPath();
-        acontext.lineWidth = 10;
-        acontext.strokeStyle = "#990000";
-        acontext.moveTo(0, 0);
-        acontext.lineTo(100, 100);
-        acontext.stroke();
-	textureObject = gl.createTexture();
-	var data = acontext.getImageData(0, 0, 100, 100);
-	createTextureFromImageData(gl, data);
-	*/
-	}
+    // var image = new Image();
+	// image.src = "planet-earth.jpg";
+	// var view3d = this;
+	// alert(image);
+	// image.onload = function()
+	// {
+        // alert(image);
+	    // view3d.createTexture(gl, image);
+	
+	// acanvas = document.createElement('canvas');
+    // acanvas.width = 100;
+    // acanvas.height = 100;
+    // acontext = acanvas.getContext('2d');
+    // acontext.clearRect(0, 0, backCanvas.width, backCanvas.height);
+        // acontext.beginPath();
+        // acontext.lineWidth = 10;
+        // acontext.strokeStyle = "#990000";
+        // acontext.moveTo(0, 0);
+        // acontext.lineTo(100, 100);
+        // acontext.stroke();
+	// textureObject = gl.createTexture();
+	// var data = acontext.getImageData(0, 0, 100, 100);
+	// createTextureFromImageData(gl, data);
+	// }
 }
 
 View3d.prototype.createTextureFromImageData = function(gl, data)
@@ -270,12 +277,68 @@ View3d.prototype.eraseView = function(gl)
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 }
 
-View3d.prototype.drawTextbox = function(gl, imageData, wx, wy, width, height)
+// arguments are in world space
+View3d.prototype.drawImage = function(gl, imageData, x, y, z, width, height)
 {
+    //gl.blendFunc(gl.ONE, gl.ZERO);
+    //alert("called drawImage");
+    //alert(imageData);
 	this.useMeshShaders(gl);
     //gl.deleteBuffer(squareVertexBuffer);
 	//squareVertexBuffer = gl.createBuffer();    
 	gl.bindBuffer(gl.ARRAY_BUFFER, this.squareVertexBuffer);
+    //alert("called gl.bindBuffer");
+	
+    // test data
+	// vertices = [
+		 // -2, 2.5,  -10,
+		  // -1.5, 2.5,  -10,
+		 // -2,  3,  -10,
+		  // -1.5,  3,  -10,
+	// ];
+	
+	//this.frustum.moveForward(-.01);
+    //alert("frustum = " + this.frustum);
+    
+	vertices = [
+		   x,     y,  z,
+		   x + width, y,  z,
+		   x,     y + height,  z,
+		   x + width, y + height,  z
+	];
+	
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+	
+	
+	this.mMatrix = this.frustum.transform;
+	//frustum.moveForward(-.01);
+	gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+    //alert(gl.viewportWidth);
+
+	gl.activeTexture(gl.TEXTURE0);
+	
+	this.createTextureFromImageData(gl, imageData);
+	
+	gl.uniform1i(gl.getUniformLocation(this.meshShaderProgram, "uSampler"), 0);
+
+	gl.bindBuffer(gl.ARRAY_BUFFER, this.squareVertexBuffer);
+	gl.vertexAttribPointer(this.vPosition, this.squareVertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
+	gl.bindBuffer(gl.ARRAY_BUFFER, this.squareTexBuffer);
+	gl.vertexAttribPointer(this.vTexCoord, this.squareTexBuffer.itemSize, gl.FLOAT, false, 0, 0);
+	this.setMatrixUniformsForMeshShaders(gl);
+	gl.drawArrays(gl.TRIANGLE_STRIP, 0, this.squareVertexBuffer.numItems);
+    //alert("finished drawImage");
+}
+
+// arguments are in screen space at front face of view frustum
+View3d.prototype.drawTextbox = function(gl, imageData, wx, wy, width, height)
+{
+    //alert("called drawTextbox");
+	this.useMeshShaders(gl);
+    //gl.deleteBuffer(squareVertexBuffer);
+	//squareVertexBuffer = gl.createBuffer();    
+	gl.bindBuffer(gl.ARRAY_BUFFER, this.squareVertexBuffer);
+    //alert("called gl.bindBuffer");
 	/*
 	vertices = [
 		 -.5, -.5,  -0.5,
@@ -284,7 +347,8 @@ View3d.prototype.drawTextbox = function(gl, imageData, wx, wy, width, height)
 		  .5,  .5,  -0.5,
 	];
 	*/
-	//frustum.moveForward(-.01);
+	//this.frustum.moveForward(-.001);
+    //alert("frustum = " + this.frustum);
 	var coord = this.frustum.convertScreenToWorld(wx + 20, wy + 20, this.screenWidth, this.screenHeight);
 	var x = coord[0];
 	var y = coord[1];	
@@ -317,6 +381,38 @@ View3d.prototype.drawTextbox = function(gl, imageData, wx, wy, width, height)
 	gl.vertexAttribPointer(this.vTexCoord, this.squareTexBuffer.itemSize, gl.FLOAT, false, 0, 0);
 	this.setMatrixUniformsForMeshShaders(gl);
 	gl.drawArrays(gl.TRIANGLE_STRIP, 0, this.squareVertexBuffer.numItems);
+}
+
+View3d.prototype.drawLine = function(gl, vertices)
+{
+//if (this.drawing)
+//return;
+//this.drawing = true;
+//alert("@drawLine");
+
+    //gl.lineWidth(0);  // doesn't work
+    //gl.blendFunc(gl.SRC_ALPHA, gl.DST_COLOR);
+	this.useLineShaders(gl);
+    
+	this.polyBuffer = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, this.polyBuffer);
+    
+	if (vertices.length < 6)
+	    return;
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.DYNAMIC_DRAW);
+	
+	this.mMatrix = this.frustum.transform;
+	
+	gl.vertexAttribPointer(this.vPosition, 3, gl.FLOAT, false, 0, 0);
+	this.setMatrixUniformsForLineShaders(gl);
+	var count = vertices.length/3;
+    if (count < 2)
+        return;
+    //alert("count = " + count);
+	gl.drawArrays(gl.LINES, 0, count);
+	//this.drawing = false;
+	gl.deleteBuffer(this.polyBuffer);
+    //alert("end drawLine");
 }
 
 View3d.prototype.drawPolyline = function(gl, polyline)
@@ -352,7 +448,6 @@ this.drawing = true;
 	gl.vertexAttribPointer(this.vPosition, 3, gl.FLOAT, false, 0, 0);
 	this.setMatrixUniformsForLineShaders(gl);
 	var count = vertices.length/3 -1;
-	//alert(count);
 	gl.drawArrays(gl.LINE_STRIP, 0, count);
 	this.drawing = false;
 	gl.deleteBuffer(this.polyBuffer);

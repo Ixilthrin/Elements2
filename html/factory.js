@@ -8,6 +8,16 @@ function addCanvas(parent, id, tabindex)
 	parent.appendChild(element);
 }
 
+function addCanvasUsingWindowDimensions(parent, id, tabindex)
+{
+    var element = document.createElement("canvas");
+	element.width = window.innerWidth;
+	element.height = window.innerHeight;
+	element.id = id;
+	element.tabindex = tabindex;
+	parent.appendChild(element);
+}
+
 function addButton(parent, id, value, onclick)
 {
     var element = document.createElement("input");

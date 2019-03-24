@@ -5,6 +5,7 @@ function Frustum(aspectRatio)
 		
 	var top = .36;
     var right = .36 * aspectRatio;
+    //alert(right);
 	var left = -1 * right;
     this.identity = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
     this.transform = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
@@ -12,9 +13,9 @@ function Frustum(aspectRatio)
     this.frontUpperLeft = [ left, .36, -.999999, 1 ];
     this.frontLowerLeft = [ left, -.36, -.999999, 1];
     this.frontUpperRight = [ right, .36, -.999999, 1 ];
-    this.backUpperLeft = [ left, .36, -40, 1 ];
-    this.backLowerLeft = [ left, -.36, -40, 1 ];
-    this.backUpperRight = [ right, .36, -40, 1 ];
+    this.backUpperLeft = [ left, .36, -1000, 1 ];
+    this.backLowerLeft = [ left, -.36, -1000, 1 ];
+    this.backUpperRight = [ right, .36, -1000, 1 ];
     this.totalRotationY = 0;
 }
 
@@ -40,6 +41,19 @@ Frustum.prototype.matrixMult = function(L, R)
     result[13] = L[1] * R[12] + L[5] * R[13] + L[9] * R[14] + L[13] * R[15];
     result[14] = L[2] * R[12] + L[6] * R[13] + L[10] * R[14] + L[14] * R[15];
     result[15] = L[3] * R[12] + L[7] * R[13] + L[11] * R[14] + L[15] * R[15];
+    return result;
+}
+
+// multiply matrix M by vertex V, return transformed vertex
+Frustum.prototype.transformVertex = function(M, V)
+{
+    var result = new Array();
+    
+    result[0] = M[0] * V[0] + M[4] * V[1] + M[8] * V[2] + M[12] * V[3];
+    result[1] = M[1] * V[0] + M[5] * V[1] + M[9] * V[2] + M[13] * V[3];
+    result[2] = M[2] * V[0] + M[6] * V[1] + M[10] * V[2] + M[14] * V[3];
+    result[3] = M[3] * V[0] + M[7] * V[1] + M[11] * V[2] + M[15] * V[3];
+    
     return result;
 }
 
