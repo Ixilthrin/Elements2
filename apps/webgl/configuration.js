@@ -18,6 +18,7 @@ scripts.push("TextDrawingUtil.js?v=1");
 scripts.push("graph/Graph.js?v=1");
 scripts.push("graph/Nodes.js?v=1");
 scripts.push("graph/NodeDrawer.js?v=1");
+scripts.push("graph/GraphData.js?v=1");
 scripts.push("ImageUtil.js?v=1");
 scripts.push("main.js?v=1");
 

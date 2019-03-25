@@ -7,14 +7,8 @@ var Graph = function(graphics, textUtil, imageUtil) {
         NodeDrawer: null,
         initialize: function() {
             that.NodeDrawer = NodeDrawer(graphics, imageUtil);
-            
-            let node0 = that.Nodes.push(Node(-2, -2, -10, "Hello", [1, 3]));
-            let node1 = that.Nodes.push(Node(2, 2, -20, "Goodbye",[2, 6]));// 2
-            let node2 = that.Nodes.push(Node(-2, 2, -15, "Another One", [3, 4]));//3,4
-            let node3 = that.Nodes.push(Node(-1, 2.5, -5, "Panda", [4]));//4
-            let node4 = that.Nodes.push(Node(-3, -1, -25, "Zebra", [5, 6]));//5
-            let node5 = that.Nodes.push(Node(-4, -2.3, -5, "Zebra Food", []));
-            let node6 = that.Nodes.push(Node(2, -2.3, -8, "Zoo", []));
+            let data = GraphData();
+            that.Nodes = data.getGraphData();
         },
         drawEdge: function(node1, node2) {
             let x1 = 0;
